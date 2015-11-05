@@ -1,0 +1,39 @@
+{
+  "name": "ytake/laravel-fluent-logger",
+  "description": "fluent logger for laravel framework",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "keywords": [
+    "laravel",
+    "logger",
+    "fluent"
+  ],
+  "authors": [
+    {
+      "name": "Yuuki Takezawa",
+      "email": "yuuki.takezawa@comnect.jp.net"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.9",
+    "fluent/logger": "~1.0",
+    "illuminate/log": "~5.0",
+    "illuminate/support": "~5.0",
+    "illuminate/config": "~5.0",
+    "illuminate/contracts": "~5.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.*",
+    "satooshi/php-coveralls": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Ytake\\LaravelFluent\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "classmap": [
+      "tests/TestCase.php"
+    ]
+  }
+}

@@ -1,2 +1,2 @@
 # Laravel-FluentLogger
-fuluent logger for laravel framework
+fluent logger for laravel framework
