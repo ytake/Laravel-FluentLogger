@@ -25,9 +25,6 @@ use Illuminate\Support\ServiceProvider;
  */
 class LogServiceProvider extends ServiceProvider
 {
-    /** @var bool */
-    protected $defer = true;
-
     /**
      * {@inheritdoc}
      */
@@ -56,16 +53,5 @@ class LogServiceProvider extends ServiceProvider
     {
         return (isset($this->app['path.config']))
             ? $this->app['path.config'] : $this->app->basePath() . DIRECTORY_SEPARATOR . 'config';
-    }
-
-
-    /**
-     * {@inheritdoc}
-     */
-    public function provides()
-    {
-        return [
-            'fluent.handler'
-        ];
     }
 }

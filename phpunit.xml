@@ -20,6 +20,8 @@
             <directory>./src</directory>
             <exclude>
                 <directory>./src/config</directory>
+                <file>./src/LogServiceProvider.php</file>
+                <file>./src/ConfigureLogging.php</file>
             </exclude>
         </whitelist>
     </filter>
@@ -27,7 +29,4 @@
         <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
         <log type="coverage-clover" target="tests/logs/clover.xml"/>
     </logging>
-    <php>
-        <includePath>./tests</includePath>
-    </php>
 </phpunit>
