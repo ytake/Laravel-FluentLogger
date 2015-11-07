@@ -39,7 +39,7 @@ your config/app.php
 ```php
 'providers' => [
     // add smarty extension
-    \Ytake\Ytake\LaravelFluent\LogServiceProvider::class,
+    \Ytake\LaravelFluent\LogServiceProvider::class,
 ]
 ```
 
