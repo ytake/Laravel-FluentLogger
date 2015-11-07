@@ -5,14 +5,24 @@ filter:
         - tests/*
         - src/ConfigureLogging.php
 tools:
-    external_code_coverage:
-        timeout: 600
     php_code_sniffer:
         config:
             standard: "PSR2"
     php_cs_fixer:
         config: { level: psr2 }
+    php_mess_detector: true
+    sensiolabs_security_checker: true
+    php_pdepend: true
+    php_sim: true
 checks:
     php:
         code_rating: true
         duplication: true
+build:
+    tests:
+        override:
+            -
+                command: 'phpunit'
+                coverage:
+                    file: 'tests/logs/clover.xml'
+                    format: 'php-clover'
