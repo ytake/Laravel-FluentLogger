@@ -97,6 +97,23 @@ override bootstrappers property
     ];
 ```
 
+in Application Console\Kernel class
+
+override bootstrappers property
+
+```php
+    protected $bootstrappers = [
+        'Illuminate\Foundation\Bootstrap\DetectEnvironment',
+        'Illuminate\Foundation\Bootstrap\LoadConfiguration',
+        \Ytake\LaravelFluent\ConfigureLogging::class,
+        'Illuminate\Foundation\Bootstrap\HandleExceptions',
+        'Illuminate\Foundation\Bootstrap\RegisterFacades',
+        'Illuminate\Foundation\Bootstrap\SetRequestForConsole',
+        'Illuminate\Foundation\Bootstrap\RegisterProviders',
+        'Illuminate\Foundation\Bootstrap\BootProviders',
+    ];
+```
+
 edit config/app.php
 ```php
 'log' => 'fluent',
@@ -120,13 +137,13 @@ example (production)
  ```
  and more
 
-## Laravel.Smarty Package Optimize (Optional for production)
+## Package Optimize (Optional for production)
 
 required config/compile.php
 
 ```php
 'providers' => [
-   //
-   \Ytake\LaravelFluent\LogServiceProvider::class,
+    //
+    \Ytake\LaravelFluent\LogServiceProvider::class,
 ],
 ```
