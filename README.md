@@ -97,3 +97,7 @@ override bootstrappers property
     ];
 ```
 
+edit config/app.php
+```php
+'log' => 'fluent',
+```
