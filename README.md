@@ -101,3 +101,32 @@ edit config/app.php
 ```php
 'log' => 'fluent',
 ```
+
+## fluentd config sample
+
+```
+## match tag=local.** (for laravel log develop)
+<match local.**>
+  type stdout
+</match>
+```
+
+example (production)
+
+ ```
+<match production.**>
+  type stdout
+</match>
+ ```
+ and more
+
+## Laravel.Smarty Package Optimize (Optional for production)
+
+required config/compile.php
+
+```php
+'providers' => [
+   //
+   \Ytake\LaravelFluent\LogServiceProvider::class,
+],
+```

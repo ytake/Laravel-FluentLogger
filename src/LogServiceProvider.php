@@ -52,4 +52,24 @@ class LogServiceProvider extends ServiceProvider
         return (isset($this->app['path.config']))
             ? $this->app['path.config'] : $this->app->basePath() . DIRECTORY_SEPARATOR . 'config';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function compiles()
+    {
+        return [
+            base_path() . '/vendor/ytake/laravel-fluent-logger/src/LogServiceProvider.php',
+            base_path() . '/vendor/ytake/laravel-fluent-logger/src/ConfigureLogging.php',
+            base_path() . '/vendor/ytake/laravel-fluent-logger/src/FluentHandler.php',
+            base_path() . '/vendor/ytake/laravel-fluent-logger/src/RegisterPushHandler.php',
+            base_path() . '/vendor/ytake/laravel-fluent-logger/src/Writer.php',
+            base_path() . '/vendor/fluent/logger/src/Entity.php',
+            base_path() . '/vendor/fluent/logger/src/Exception.php',
+            base_path() . '/vendor/fluent/logger/src/FluentLogger.php',
+            base_path() . '/vendor/fluent/logger/src/JsonPacker.php',
+            base_path() . '/vendor/fluent/logger/src/LoggerInterface.php',
+            base_path() . '/vendor/fluent/logger/src/PackerInterface.php',
+        ];
+    }
 }
