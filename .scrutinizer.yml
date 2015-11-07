@@ -5,6 +5,8 @@ filter:
         - tests/*
         - src/ConfigureLogging.php
 tools:
+    external_code_coverage:
+        timeout: 600
     php_code_sniffer:
         config:
             standard: "PSR2"
