@@ -16,9 +16,9 @@
 
 return [
 
-    'host' => '127.0.0.1',
+    'host' => env('FLUENTD_HOST', '127.0.0.1'),
 
-    'port' => 24224,
+    'port' => env('FLUENTD_PORT', 24224),
 
     'options' => [],
 ];

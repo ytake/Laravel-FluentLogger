@@ -35,9 +35,7 @@ class LogServiceProvider extends ServiceProvider
          */
         $configPath = __DIR__ . '/config/fluent.php';
         $this->mergeConfigFrom($configPath, 'fluent');
-        $this->publishes([
-            $configPath => $this->resolveConfigurePath() . DIRECTORY_SEPARATOR . 'fluent.php'
-        ], 'log');
+        $this->publishes([$configPath => config_path('fluent.php')], 'log');
 
         $this->app->bind('fluent.handler', function ($app) {
             return new RegisterPushHandler(
