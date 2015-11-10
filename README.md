@@ -68,7 +68,7 @@ $ php artisan vendor:publish --provider="Ytake\LaravelFluent\LogServiceProvider"
 your Application service provider
 ```php
 
-public function bbot()
+public function boot()
 {
     $this->app['fluent.handler']->pushHandler();
 }

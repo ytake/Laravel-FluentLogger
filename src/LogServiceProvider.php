@@ -45,15 +45,6 @@ class LogServiceProvider extends ServiceProvider
     }
 
     /**
-     * @return string
-     */
-    protected function resolveConfigurePath()
-    {
-        return (isset($this->app['path.config']))
-            ? $this->app['path.config'] : $this->app->basePath() . DIRECTORY_SEPARATOR . 'config';
-    }
-
-    /**
      * {@inheritdoc}
      */
     public static function compiles()
