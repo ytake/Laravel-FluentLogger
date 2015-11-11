@@ -33,12 +33,9 @@ or composer.json
 },
 ```
 
-add Laravel.Smarty Service Providers
-
 your config/app.php
 ```php
 'providers' => [
-    // add smarty extension
     \Ytake\LaravelFluent\LogServiceProvider::class,
 ]
 ```
