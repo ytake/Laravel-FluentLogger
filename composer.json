@@ -1,13 +1,14 @@
 {
   "name": "ytake/laravel-fluent-logger",
-  "description": "fluent logger for laravel framework",
+  "description": "fluent logger for laravel and lumen",
   "minimum-stability": "stable",
   "license": "MIT",
   "keywords": [
     "laravel",
     "log",
     "logging",
-    "fluent"
+    "fluent",
+    "lumen"
   ],
   "authors": [
     {
