@@ -1,4 +1,4 @@
-# Laravel-FluentLogger
+# laravel-fluent-logger
 fluent logger for laravel
 (with Monolog handler for Fluentd )
 
@@ -182,3 +182,11 @@ class Application extends \Laravel\Lumen\Application
   type stdout
 </match>
 ```
+
+## Author ##
+
+- [Yuuki Takezawa](mailto:yuuki.takezawa@comnect.jp.net) ([twitter](http://twitter.com/ex_takezawa))
+
+## License ##
+
+The code for laravel-fluent-logger is distributed under the terms of the MIT license.
