@@ -23,6 +23,6 @@ class PushHandlerTest extends \TestCase
     public function testPushHandler()
     {
         $this->register->pushHandler();
-        $this->assertNotCount(0 , $this->logger->getMonolog()->getHandlers());
+        $this->assertNotCount(0, $this->logger->getMonolog()->getHandlers());
     }
 }
