@@ -12,7 +12,8 @@ class PushHandlerTest extends \TestCase
     {
         parent::setUp();
         $this->filesystem = new \Illuminate\Filesystem\Filesystem;
-        $this->logger = new \Monolog\Logger('testing');
+
+        $this->logger = new \Illuminate\Log\Writer(new \Monolog\Logger('testing'));
         $this->register = new \Ytake\LaravelFluent\RegisterPushHandler(
             $this->logger,
             $this->app['config']->get('fluent')
@@ -22,6 +23,6 @@ class PushHandlerTest extends \TestCase
     public function testPushHandler()
     {
         $this->register->pushHandler();
-        $this->assertNotCount(0 , $this->logger->getHandlers());
+        $this->assertNotCount(0 , $this->logger->getMonolog()->getHandlers());
     }
 }
