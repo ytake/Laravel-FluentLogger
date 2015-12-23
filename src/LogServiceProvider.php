@@ -39,7 +39,8 @@ class LogServiceProvider extends ServiceProvider
 
         $this->app->bind('fluent.handler', function ($app) {
             return new RegisterPushHandler(
-                $app['Psr\Log\LoggerInterface'], $app['config']->get('fluent')
+                $app['Illuminate\Contracts\Logging\Log'],
+                $app['config']->get('fluent')
             );
         });
     }
