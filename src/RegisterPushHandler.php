@@ -17,7 +17,7 @@
 namespace Ytake\LaravelFluent;
 
 use Fluent\Logger\FluentLogger;
-use Psr\Log\LoggerInterface;
+use Illuminate\Contracts\Logging\Log as LoggerInterface;
 
 /**
  * Class RegisterPushHandler
@@ -47,7 +47,7 @@ class RegisterPushHandler
      */
     public function pushHandler()
     {
-        $this->logger->pushHandler(
+        $this->logger->getMonolog()->pushHandler(
             new FluentHandler(
                 new FluentLogger($this->config['host'], $this->config['port'], $this->config['options']
                 )
