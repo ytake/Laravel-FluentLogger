@@ -51,7 +51,7 @@ class ConfigureLogging extends BootstrapConfigureLogging
         $host = $configure['host'] ? $configure['host'] : FluentLogger::DEFAULT_ADDRESS;
         $port = $configure['port'] ? $configure['port'] : FluentLogger::DEFAULT_LISTEN_PORT;
         $options = $configure['options'] ? $configure['options'] : [];
-        $tagFormat = $configure['tagFormat'] ? $configure['tagFormat'] : null;
+        $tagFormat = isset($configure['tagFormat']) ? $configure['tagFormat'] : null;
         $log->useFluentLogger($host, $port, $options, $tagFormat);
     }
 }
