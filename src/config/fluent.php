@@ -21,4 +21,6 @@ return [
     'port' => env('FLUENTD_PORT', 24224),
 
     'options' => [],
+
+    //'tagFormat' => '{{channel}}.{{level_name}}',
 ];

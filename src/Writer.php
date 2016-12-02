@@ -36,11 +36,12 @@ class Writer extends \Illuminate\Log\Writer
      * @param  string  $level
      * @return \Psr\Log\LoggerInterface
      */
-    public function useFluentLogger($host, $port, $options = [], $level = 'debug')
+    public function useFluentLogger($host, $port, $options = [], $tagFormat, $level = 'debug')
     {
         return $this->monolog->pushHandler(
             new FluentHandler(
                 new FluentLogger($host, $port, $options, $this->packer),
+                $tagFormat,
                 $this->parseLevel($level)
             )
         );
