@@ -31,7 +31,7 @@ class FluentHandler extends AbstractProcessingHandler
     protected $logger;
 
     /** @var string  */
-    protected $tagFormat = '%s.%s';
+    protected $tagFormat = '{{channel}}.{{level_name}}';
 
     /**
      * FluentHandler constructor.
@@ -40,9 +40,12 @@ class FluentHandler extends AbstractProcessingHandler
      * @param bool|int        $level
      * @param bool|true       $bubble
      */
-    public function __construct(LoggerInterface $logger, $level = Logger::DEBUG, $bubble = true)
+    public function __construct(LoggerInterface $logger, $tagFormat = null, $level = Logger::DEBUG, $bubble = true)
     {
         $this->logger = $logger;
+        if ($tagFormat !== null) {
+            $this->tagFormat = $tagFormat;
+        }
         parent::__construct($level, $bubble);
     }
 
@@ -51,10 +54,40 @@ class FluentHandler extends AbstractProcessingHandler
      */
     protected function write(array $record)
     {
+        //sprintf($this->tagFormat, $record['channel'], $record['level_name'])
+        $tag = $this->populateTag($record);
         $this->logger->post(
-            sprintf($this->tagFormat, $record['channel'], $record['level_name']),
+            $tag,
             [$record['message'] => $record['context']]
         );
+    }
+
+    /**
+     * @param array $record
+     */
+    protected function populateTag($record)
+    {
+        return $this->processFormat($record, $this->tagFormat);
+    }
+
+    /**
+     * @param array $record
+     * @param array $format
+     */
+    protected function processFormat($record, $format)
+    {
+        $tag = $format;
+
+        if (preg_match_all('/\{\{(.*?)\}\}/', $tag, $matches)) {
+            foreach ($matches[1] as $match) {
+                if (!isset($record[$match])) {
+                    throw new Exception('No such field in the record');
+                }
+                $tag = str_replace(sprintf('{{%s}}', $match), $record[$match], $tag);
+            }
+        }
+
+        return $tag;
     }
 
     /**

@@ -28,7 +28,7 @@ class FluentHandlerTest extends \TestCase
             'extra' => [],
             'channel' => 'testing',
             'level_name' => 'testing',
-            'context' => 'testing'
+            'context' => ['testing']
         ]);
         $this->assertFileExists(__DIR__ . '/tmp/put.log');
         $log = $this->filesystem->get(__DIR__ . '/tmp/put.log');
