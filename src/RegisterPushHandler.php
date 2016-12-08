@@ -51,7 +51,7 @@ class RegisterPushHandler
         $this->logger->getMonolog()->pushHandler(
             new FluentHandler(
                 new FluentLogger($this->config['host'], $this->config['port'], $this->config['options']),
-                $tagFormat,
+                $tagFormat
             )
         );
     }
