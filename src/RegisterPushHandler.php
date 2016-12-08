@@ -47,10 +47,11 @@ class RegisterPushHandler
      */
     public function pushHandler()
     {
+        $tagFormat = isset($this->config['tagFormat']) ? $this->config['tagFormat'] : null;
         $this->logger->getMonolog()->pushHandler(
             new FluentHandler(
-                new FluentLogger($this->config['host'], $this->config['port'], $this->config['options']
-                )
+                new FluentLogger($this->config['host'], $this->config['port'], $this->config['options']),
+                $tagFormat,
             )
         );
     }
