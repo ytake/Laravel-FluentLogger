@@ -54,7 +54,6 @@ class FluentHandler extends AbstractProcessingHandler
      */
     protected function write(array $record)
     {
-        //sprintf($this->tagFormat, $record['channel'], $record['level_name'])
         $tag = $this->populateTag($record);
         $this->logger->post(
             $tag,
