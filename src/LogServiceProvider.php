@@ -11,17 +11,16 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
- * Copyright (c) 2015 Yuuki Takezawa
+ *
+ * Copyright (c) 2015-2016 Yuuki Takezawa
+ *
  */
-
 namespace Ytake\LaravelFluent;
 
 use Illuminate\Support\ServiceProvider;
 
 /**
  * Class LogServiceProvider
- *
- * @package Ytake\LaravelFluent
  */
 class LogServiceProvider extends ServiceProvider
 {

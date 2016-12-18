@@ -11,9 +11,10 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
- * Copyright (c) 2015 Yuuki Takezawa
+ *
+ * Copyright (c) 2015-2016 Yuuki Takezawa
+ *
  */
-
 namespace Ytake\LaravelFluent;
 
 use Fluent\Logger\FluentLogger;
@@ -21,19 +22,19 @@ use Fluent\Logger\PackerInterface;
 
 /**
  * Class Writer
- *
- * @package App\Logger
  */
 class Writer extends \Illuminate\Log\Writer
 {
-    /** @var null  */
+    /** @var null */
     protected $packer = null;
 
     /**
-     * Register a fluent handler.
+     * @param string $host
+     * @param string $port
+     * @param array  $options
+     * @param null   $tagFormat
+     * @param string $level
      *
-     * @param  string  $name
-     * @param  string  $level
      * @return \Psr\Log\LoggerInterface
      */
     public function useFluentLogger($host, $port, $options = [], $tagFormat = null, $level = 'debug')
@@ -55,6 +56,7 @@ class Writer extends \Illuminate\Log\Writer
     public function setPacker(PackerInterface $packer)
     {
         $this->packer = $packer;
+
         return $this;
     }
 }

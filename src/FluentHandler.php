@@ -11,9 +11,10 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
- * Copyright (c) 2015 Yuuki Takezawa
+ *
+ * Copyright (c) 2015-2016 Yuuki Takezawa
+ *
  */
-
 namespace Ytake\LaravelFluent;
 
 use Fluent\Logger\LoggerInterface;
@@ -22,23 +23,22 @@ use Monolog\Handler\AbstractProcessingHandler;
 
 /**
  * Class FluentHandler
- *
- * @package Ytake\LaravelFluent
  */
 class FluentHandler extends AbstractProcessingHandler
 {
     /** @var LoggerInterface */
     protected $logger;
 
-    /** @var string  */
+    /** @var string */
     protected $tagFormat = '{{channel}}.{{level_name}}';
 
     /**
      * FluentHandler constructor.
      *
      * @param LoggerInterface $logger
-     * @param bool|int        $level
-     * @param bool|true       $bubble
+     * @param null|string     $tagFormat
+     * @param int             $level
+     * @param bool            $bubble
      */
     public function __construct(LoggerInterface $logger, $tagFormat = null, $level = Logger::DEBUG, $bubble = true)
     {
@@ -57,30 +57,37 @@ class FluentHandler extends AbstractProcessingHandler
         $tag = $this->populateTag($record);
         $this->logger->post(
             $tag,
-            [$record['message'] => $record['context']]
+            [
+                'message' => $record['message'],
+                'context' => $record['context'],
+                'extra'   => $record['extra'],
+            ]
         );
     }
 
     /**
      * @param array $record
+     *
+     * @return string
      */
-    protected function populateTag($record)
+    protected function populateTag(array $record)
     {
         return $this->processFormat($record, $this->tagFormat);
     }
 
     /**
-     * @param array $record
-     * @param array $format
+     * @param array  $record
+     * @param string $tag
+     *
+     * @return string
+     * @throws \Exception
      */
-    protected function processFormat($record, $format)
+    protected function processFormat(array $record, $tag)
     {
-        $tag = $format;
-
         if (preg_match_all('/\{\{(.*?)\}\}/', $tag, $matches)) {
             foreach ($matches[1] as $match) {
                 if (!isset($record[$match])) {
-                    throw new Exception('No such field in the record');
+                    throw new \LogicException('No such field in the record');
                 }
                 $tag = str_replace(sprintf('{{%s}}', $match), $record[$match], $tag);
             }
