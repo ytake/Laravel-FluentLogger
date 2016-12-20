@@ -34,7 +34,25 @@ class FluentHandlerTest extends \TestCase
         $log = $this->filesystem->get(__DIR__ . '/tmp/put.log');
         list($tag, $data) = (unserialize($log));
         $this->assertSame('testing.testing', $tag);
-        $this->assertArrayHasKey('testing', $data);
+    }
+
+    /**
+     * @expectedException \LogicException
+     */
+    public function testShouldThrowExceptionForMissingTag()
+    {
+        $handler = new \Ytake\LaravelFluent\FluentHandler(
+            new stubLogger($this->filesystem),
+            '{{channel}}.{{level_name}}.{{testing}}'
+        );
+        $handler->handle([
+            'message' => 'testing',
+            'level' => \Monolog\Logger::DEBUG,
+            'extra' => [],
+            'channel' => 'testing',
+            'level_name' => 'testing',
+            'context' => ['testing']
+        ]);
     }
 
     protected function tearDown()
