@@ -5,7 +5,7 @@ class PushHandlerTest extends \TestCase
     /** @var \Ytake\LaravelFluent\RegisterPushHandler */
     protected $register;
 
-    /** @var \Monolog\Logger */
+    /** @var \Ytake\LaravelFluent\Writer */
     protected $logger;
 
     protected function setUp()

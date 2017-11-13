@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -12,14 +13,15 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
  *
- * Copyright (c) 2015-2016 Yuuki Takezawa
+ * Copyright (c) 2015-2017 Yuuki Takezawa
  *
  */
+
 namespace Ytake\LaravelFluent;
 
 use Fluent\Logger\LoggerInterface;
-use Monolog\Logger;
 use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\Logger;
 
 /**
  * Class FluentHandler
@@ -40,8 +42,12 @@ class FluentHandler extends AbstractProcessingHandler
      * @param int             $level
      * @param bool            $bubble
      */
-    public function __construct(LoggerInterface $logger, $tagFormat = null, $level = Logger::DEBUG, $bubble = true)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        string $tagFormat = null,
+        int $level = Logger::DEBUG,
+        bool $bubble = true
+    ) {
         $this->logger = $logger;
         if ($tagFormat !== null) {
             $this->tagFormat = $tagFormat;
@@ -70,7 +76,7 @@ class FluentHandler extends AbstractProcessingHandler
      *
      * @return string
      */
-    protected function populateTag(array $record)
+    protected function populateTag(array $record): string
     {
         return $this->processFormat($record, $this->tagFormat);
     }
@@ -80,9 +86,8 @@ class FluentHandler extends AbstractProcessingHandler
      * @param string $tag
      *
      * @return string
-     * @throws \Exception
      */
-    protected function processFormat(array $record, $tag)
+    protected function processFormat(array $record, string $tag): string
     {
         if (preg_match_all('/\{\{(.*?)\}\}/', $tag, $matches)) {
             foreach ($matches[1] as $match) {
@@ -99,7 +104,7 @@ class FluentHandler extends AbstractProcessingHandler
     /**
      * @return LoggerInterface
      */
-    public function getLogger()
+    public function getLogger(): LoggerInterface
     {
         return $this->logger;
     }

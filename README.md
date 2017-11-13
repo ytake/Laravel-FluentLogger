@@ -74,44 +74,6 @@ public function boot()
 
 ### All logs to fluentd
 
-in Application Http\Kernel class
-
-override bootstrappers property
-
-```php
-    /**
-     * The bootstrap classes for the application.
-     *
-     * @var array
-     */
-    protected $bootstrappers = [
-        'Illuminate\Foundation\Bootstrap\DetectEnvironment',
-        'Illuminate\Foundation\Bootstrap\LoadConfiguration',
-        \Ytake\LaravelFluent\ConfigureLogging::class,
-        'Illuminate\Foundation\Bootstrap\HandleExceptions',
-        'Illuminate\Foundation\Bootstrap\RegisterFacades',
-        'Illuminate\Foundation\Bootstrap\RegisterProviders',
-        'Illuminate\Foundation\Bootstrap\BootProviders',
-    ];
-```
-
-in Application Console\Kernel class
-
-override bootstrappers property
-
-```php
-    protected $bootstrappers = [
-        'Illuminate\Foundation\Bootstrap\DetectEnvironment',
-        'Illuminate\Foundation\Bootstrap\LoadConfiguration',
-        \Ytake\LaravelFluent\ConfigureLogging::class,
-        'Illuminate\Foundation\Bootstrap\HandleExceptions',
-        'Illuminate\Foundation\Bootstrap\RegisterFacades',
-        'Illuminate\Foundation\Bootstrap\SetRequestForConsole',
-        'Illuminate\Foundation\Bootstrap\RegisterProviders',
-        'Illuminate\Foundation\Bootstrap\BootProviders',
-    ];
-```
-
 edit config/app.php
 ```php
 'log' => 'fluent',
@@ -134,17 +96,6 @@ example (production)
 </match>
  ```
  and more
-
-## Package Optimize (Optional for production)
-
-required config/compile.php
-
-```php
-'providers' => [
-    //
-    \Ytake\LaravelFluent\LogServiceProvider::class,
-],
-```
 
 ## for lumen
 Extend \Laravel\Lumen\Application and override the  getMonologHandler() method to set up your own logging config.

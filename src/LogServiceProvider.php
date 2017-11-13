@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -12,17 +13,18 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
  *
- * Copyright (c) 2015-2016 Yuuki Takezawa
+ * Copyright (c) 2015-2017 Yuuki Takezawa
  *
  */
 namespace Ytake\LaravelFluent;
 
-use Illuminate\Support\ServiceProvider;
+use Monolog\Logger as Monolog;
+use Fluent\Logger\FluentLogger;
 
 /**
  * Class LogServiceProvider
  */
-class LogServiceProvider extends ServiceProvider
+class LogServiceProvider extends \Illuminate\Log\LogServiceProvider
 {
     /**
      * {@inheritdoc}
@@ -35,32 +37,37 @@ class LogServiceProvider extends ServiceProvider
         $configPath = __DIR__ . '/config/fluent.php';
         $this->mergeConfigFrom($configPath, 'fluent');
         $this->publishes([$configPath => config_path('fluent.php')], 'log');
-
-        $this->app->bind('fluent.handler', function ($app) {
-            return new RegisterPushHandler(
-                $app['Illuminate\Contracts\Logging\Log'],
-                $app['config']->get('fluent')
-            );
-        });
+        parent::register();
     }
 
     /**
      * {@inheritdoc}
      */
-    public static function compiles()
+    public function createLogger()
     {
-        return [
-            base_path() . '/vendor/ytake/laravel-fluent-logger/src/LogServiceProvider.php',
-            base_path() . '/vendor/ytake/laravel-fluent-logger/src/ConfigureLogging.php',
-            base_path() . '/vendor/ytake/laravel-fluent-logger/src/FluentHandler.php',
-            base_path() . '/vendor/ytake/laravel-fluent-logger/src/RegisterPushHandler.php',
-            base_path() . '/vendor/ytake/laravel-fluent-logger/src/Writer.php',
-            base_path() . '/vendor/fluent/logger/src/Entity.php',
-            base_path() . '/vendor/fluent/logger/src/Exception.php',
-            base_path() . '/vendor/fluent/logger/src/FluentLogger.php',
-            base_path() . '/vendor/fluent/logger/src/JsonPacker.php',
-            base_path() . '/vendor/fluent/logger/src/LoggerInterface.php',
-            base_path() . '/vendor/fluent/logger/src/PackerInterface.php',
-        ];
+        $log = new Writer(
+            new Monolog($this->channel()), $this->app['events']
+        );
+
+        if ($this->app->hasMonologConfigurator()) {
+            call_user_func($this->app->getMonologConfigurator(), $log->getMonolog());
+        } else {
+            $this->configureHandler($log);
+        }
+
+        return $log;
+    }
+
+    /**
+     * @param Writer $log
+     */
+    protected function configureFlunetHandler(Writer $log)
+    {
+        $configure = $this->app['config']->get('fluent');
+        $host = $configure['host'] ? $configure['host'] : FluentLogger::DEFAULT_ADDRESS;
+        $port = $configure['port'] ? $configure['port'] : FluentLogger::DEFAULT_LISTEN_PORT;
+        $options = $configure['options'] ? $configure['options'] : [];
+        $tagFormat = isset($configure['tagFormat']) ? $configure['tagFormat'] : null;
+        $log->useFluentLogger($host, $port, $options, $tagFormat);
     }
 }
