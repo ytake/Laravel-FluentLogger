@@ -29,7 +29,7 @@ or composer.json
 
 ```json
 "require": {
-  "ytake/laravel-fluent-logger": "~1.0"
+  "ytake/laravel-fluent-logger": "^2.0"
 },
 ```
 
@@ -61,15 +61,15 @@ $ php artisan vendor:publish --tag=log
 $ php artisan vendor:publish --provider="Ytake\LaravelFluent\LogServiceProvider"
 ```
 
-### Basic Push Handler
+### Always Added Push Fluentd Handler
 
-your Application service provider
+edit config/fluent.php
 ```php
-
-public function boot()
-{
-    $this->app['fluent.handler']->pushHandler();
-}
+/**
+ * always added fluentd log handler
+ * example. true => daily and fluentd
+ */
+'always' => true,
 ```
 
 ### All logs to fluentd

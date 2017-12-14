@@ -12,7 +12,7 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
  *
- * Copyright (c) 2015-2016 Yuuki Takezawa
+ * Copyright (c) 2015-2017 Yuuki Takezawa
  *
  */
 return [
@@ -21,7 +21,18 @@ return [
 
     'port' => env('FLUENTD_PORT', 24224),
 
+    /** @see https://github.com/fluent/fluent-logger-php/blob/master/src/FluentLogger.php */
     'options' => [],
 
-    //'tagFormat' => '{{channel}}.{{level_name}}',
+    /** @see https://github.com/fluent/fluent-logger-php/blob/master/src/PackerInterface.php */
+    // specified class name
+    'packer' => null,
+
+    'tagFormat' => '{{channel}}.{{level_name}}',
+
+    /**
+     * always added fluentd log handler
+     * example. true => daily and fluentd
+     */
+    'always' => env('ALWAYS_PUSH_FLUENTD', false),
 ];
