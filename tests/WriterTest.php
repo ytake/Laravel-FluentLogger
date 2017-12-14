@@ -28,8 +28,8 @@ class WriterTest extends \TestCase
     public function testSetPacker()
     {
         $config = $this->app['config']->get('fluent');
-        $logger = $this->writer->setPacker(new stubPacker)
-            ->useFluentLogger($config['host'], $config['port']);
+        $this->writer->setPacker(new stubPacker);
+        $logger = $this->writer->useFluentLogger($config['host'], $config['port']);
         $this->assertInstanceOf('Monolog\Logger', $logger);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -12,13 +13,15 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
  *
- * Copyright (c) 2015-2016 Yuuki Takezawa
+ * Copyright (c) 2015-2017 Yuuki Takezawa
  *
  */
+
 namespace Ytake\LaravelFluent;
 
 use Fluent\Logger\FluentLogger;
 use Fluent\Logger\PackerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Writer
@@ -29,16 +32,21 @@ class Writer extends \Illuminate\Log\Writer
     protected $packer = null;
 
     /**
-     * @param string $host
-     * @param string $port
-     * @param array  $options
-     * @param null   $tagFormat
-     * @param string $level
+     * @param string      $host
+     * @param int         $port
+     * @param array       $options
+     * @param string|null $tagFormat
+     * @param string      $level
      *
-     * @return \Psr\Log\LoggerInterface
+     * @return LoggerInterface
      */
-    public function useFluentLogger($host, $port, $options = [], $tagFormat = null, $level = 'debug')
-    {
+    public function useFluentLogger(
+        string $host,
+        int $port,
+        array $options = [],
+        string $tagFormat = null,
+        string $level = 'debug'
+    ): LoggerInterface {
         return $this->monolog->pushHandler(
             new FluentHandler(
                 new FluentLogger($host, $port, $options, $this->packer),
@@ -50,13 +58,9 @@ class Writer extends \Illuminate\Log\Writer
 
     /**
      * @param PackerInterface $packer
-     *
-     * @return $this
      */
     public function setPacker(PackerInterface $packer)
     {
         $this->packer = $packer;
-
-        return $this;
     }
 }

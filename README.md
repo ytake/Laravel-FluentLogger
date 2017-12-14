@@ -29,7 +29,7 @@ or composer.json
 
 ```json
 "require": {
-  "ytake/laravel-fluent-logger": "~1.0"
+  "ytake/laravel-fluent-logger": "^2.0"
 },
 ```
 
@@ -61,56 +61,18 @@ $ php artisan vendor:publish --tag=log
 $ php artisan vendor:publish --provider="Ytake\LaravelFluent\LogServiceProvider"
 ```
 
-### Basic Push Handler
+### Always Added Push Fluentd Handler
 
-your Application service provider
+edit config/fluent.php
 ```php
-
-public function boot()
-{
-    $this->app['fluent.handler']->pushHandler();
-}
+/**
+ * always added fluentd log handler
+ * example. true => daily and fluentd
+ */
+'always' => true,
 ```
 
 ### All logs to fluentd
-
-in Application Http\Kernel class
-
-override bootstrappers property
-
-```php
-    /**
-     * The bootstrap classes for the application.
-     *
-     * @var array
-     */
-    protected $bootstrappers = [
-        'Illuminate\Foundation\Bootstrap\DetectEnvironment',
-        'Illuminate\Foundation\Bootstrap\LoadConfiguration',
-        \Ytake\LaravelFluent\ConfigureLogging::class,
-        'Illuminate\Foundation\Bootstrap\HandleExceptions',
-        'Illuminate\Foundation\Bootstrap\RegisterFacades',
-        'Illuminate\Foundation\Bootstrap\RegisterProviders',
-        'Illuminate\Foundation\Bootstrap\BootProviders',
-    ];
-```
-
-in Application Console\Kernel class
-
-override bootstrappers property
-
-```php
-    protected $bootstrappers = [
-        'Illuminate\Foundation\Bootstrap\DetectEnvironment',
-        'Illuminate\Foundation\Bootstrap\LoadConfiguration',
-        \Ytake\LaravelFluent\ConfigureLogging::class,
-        'Illuminate\Foundation\Bootstrap\HandleExceptions',
-        'Illuminate\Foundation\Bootstrap\RegisterFacades',
-        'Illuminate\Foundation\Bootstrap\SetRequestForConsole',
-        'Illuminate\Foundation\Bootstrap\RegisterProviders',
-        'Illuminate\Foundation\Bootstrap\BootProviders',
-    ];
-```
 
 edit config/app.php
 ```php
@@ -134,17 +96,6 @@ example (production)
 </match>
  ```
  and more
-
-## Package Optimize (Optional for production)
-
-required config/compile.php
-
-```php
-'providers' => [
-    //
-    \Ytake\LaravelFluent\LogServiceProvider::class,
-],
-```
 
 ## for lumen
 Extend \Laravel\Lumen\Application and override the  getMonologHandler() method to set up your own logging config.
