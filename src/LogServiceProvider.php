@@ -16,10 +16,11 @@ declare(strict_types=1);
  * Copyright (c) 2015-2017 Yuuki Takezawa
  *
  */
+
 namespace Ytake\LaravelFluent;
 
-use Monolog\Logger as Monolog;
 use Fluent\Logger\FluentLogger;
+use Monolog\Logger as Monolog;
 
 /**
  * Class LogServiceProvider
@@ -45,15 +46,13 @@ class LogServiceProvider extends \Illuminate\Log\LogServiceProvider
      */
     public function createLogger()
     {
-        $log = new Writer(
-            new Monolog($this->channel()), $this->app['events']
-        );
-
+        $log = new Writer(new Monolog($this->channel()), $this->app['events']);
         if ($this->app->hasMonologConfigurator()) {
             call_user_func($this->app->getMonologConfigurator(), $log->getMonolog());
-        } else {
-            $this->configureHandler($log);
+
+            return $log;
         }
+        $this->configureHandler($log);
 
         return $log;
     }
