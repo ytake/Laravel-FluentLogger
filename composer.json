@@ -39,5 +39,12 @@
     "classmap": [
       "tests/TestCase.php"
     ]
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Ytake\\LaravelFluent\\LogServiceProvider"
+      ]
+    }
   }
 }
