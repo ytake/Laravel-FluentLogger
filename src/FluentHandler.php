@@ -65,7 +65,7 @@ class FluentHandler extends AbstractProcessingHandler
             $tag,
             [
                 'message' => $record['message'],
-                'context' => $record['context'],
+                'context' => $this->getContext($record['context']),
                 'extra'   => $record['extra'],
             ]
         );
@@ -101,6 +101,32 @@ class FluentHandler extends AbstractProcessingHandler
         return $tag;
     }
 
+    /**
+     * returns the context
+     * @return array
+     */
+    protected function getContext($context)
+    {
+        if ($this->contextHasException($context)) {
+            return $this->getContextExceptionTrace($context);
+        }
+        return $context;
+    }
+
+    protected function contextHasException($context)
+    {
+        return (
+                is_array($context)
+            && array_key_exists('exception', $context)
+            && $context['exception'] instanceof \Exception
+        );
+    }
+
+    protected function getContextExceptionTrace($context)
+    {
+        return $context['exception']->getTrace();
+    }
+    
     /**
      * @return LoggerInterface
      */
