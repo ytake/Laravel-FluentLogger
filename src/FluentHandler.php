@@ -105,7 +105,7 @@ class FluentHandler extends AbstractProcessingHandler
      * returns the context
      * @return array
      */
-    protected function getContext($context)
+    protected function getContext($context): array
     {
         if ($this->contextHasException($context)) {
             return $this->getContextExceptionTrace($context);
@@ -113,7 +113,12 @@ class FluentHandler extends AbstractProcessingHandler
         return $context;
     }
 
-    protected function contextHasException($context)
+    /**
+     * Identifies the content type of the given $context
+     * @param  mixed $context
+     * @return bool
+     */
+    protected function contextHasException($context): bool
     {
         return (
                 is_array($context)
@@ -122,7 +127,12 @@ class FluentHandler extends AbstractProcessingHandler
         );
     }
 
-    protected function getContextExceptionTrace($context)
+    /**
+     * Returns the entire exception trace as a string
+     * @param  array $context
+     * @return string
+     */
+    protected function getContextExceptionTrace(array $context): string
     {
         return $context['exception']->getTraceAsString();
     }
