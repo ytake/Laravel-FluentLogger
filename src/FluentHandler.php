@@ -103,9 +103,9 @@ class FluentHandler extends AbstractProcessingHandler
 
     /**
      * returns the context
-     * @return array
+     * @return array | string
      */
-    protected function getContext($context): array
+    protected function getContext($context)
     {
         if ($this->contextHasException($context)) {
             return $this->getContextExceptionTrace($context);
