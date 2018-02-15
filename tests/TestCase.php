@@ -16,7 +16,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
      */
     protected function createApplicationContainer()
     {
-        $container = new \Illuminate\Container\Container;
+    	$container = new \Illuminate\Container\Container;
         $filesystem = new \Illuminate\Filesystem\Filesystem;
         $container->instance('config', new \Illuminate\Config\Repository);
         $container->config->set("fluent", $filesystem->getRequire(__DIR__ . '/config/fluent.php'));

@@ -40,44 +40,5 @@ class LogServiceProvider extends \Illuminate\Log\LogServiceProvider
         $this->mergeConfigFrom($configPath, 'fluent');
         $this->publishes([$configPath => config_path('fluent.php')], 'log');
         parent::register();
-
-        $configure = $this->app['config']->get('fluent');
-        if ($configure['always']) {
-            $this->configureFluentHandler($this->app->make(LoggerInterface::class));
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function createLogger()
-    {
-        $log = new Writer(new Monolog($this->channel()), $this->app['events']);
-        if ($this->app->hasMonologConfigurator()) {
-            call_user_func($this->app->getMonologConfigurator(), $log->getMonolog());
-        } else {
-            $this->configureHandler($log);
-        }
-
-        return $log;
-    }
-
-    /**
-     * @param Writer $log
-     */
-    protected function configureFluentHandler(Writer $log)
-    {
-        $configure = $this->app['config']->get('fluent');
-        if (!is_null($configure['packer'])) {
-            if (class_exists($configure['packer'])) {
-                $log->setPacker($this->app->make($configure['packer']));
-            }
-        }
-        $log->useFluentLogger(
-            $configure['host'] ?? FluentLogger::DEFAULT_ADDRESS,
-            (int)$configure['port'] ?? FluentLogger::DEFAULT_LISTEN_PORT,
-            $configure['options'] ?? [],
-            $configure['tagFormat'] ?? null
-        );
     }
 }
