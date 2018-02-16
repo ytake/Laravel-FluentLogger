@@ -29,7 +29,7 @@ or composer.json
 
 ```json
 "require": {
-  "ytake/laravel-fluent-logger": "^2.0"
+  "ytake/laravel-fluent-logger": "^3.0"
 },
 ```
 
@@ -41,6 +41,20 @@ your config/app.php
 ]
 ```
 
+Add this to your channels in `logging.php`
+```php
+'channels' => [
+
+        'fluent' => [
+            'driver' => 'custom',
+            'via' => \Ytake\LaravelFluent\CreateFluentLogger::class,
+            'channel' => 'app-production-XY'
+        ],
+       ]
+       
+```
+
+Set your `LOG_DRIVER` in `.env` to `fluent`.
 ### publish configure
 
 * basic
