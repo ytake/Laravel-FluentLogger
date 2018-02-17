@@ -20,5 +20,12 @@ return [
 
     'port' => 24224,
 
+    /** @see https://github.com/fluent/fluent-logger-php/blob/master/src/FluentLogger.php */
     'options' => [],
+
+    /** @see https://github.com/fluent/fluent-logger-php/blob/master/src/PackerInterface.php */
+    // specified class name
+    'packer' => null,
+
+    'tagFormat' => '{{channel}}.{{level_name}}',
 ];

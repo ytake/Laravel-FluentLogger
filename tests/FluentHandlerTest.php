@@ -12,7 +12,9 @@ class FluentHandlerTest extends \TestCase
     {
         parent::setUp();
         $this->filesystem = new \Illuminate\Filesystem\Filesystem;
-        $this->handler = new \Ytake\LaravelFluent\FluentHandler(new stubLogger($this->filesystem));
+        $this->handler = new \Ytake\LaravelFluent\FluentHandler(
+            new stubLogger($this->filesystem)
+        );
     }
 
     public function testGetLoggerInstance()
@@ -23,12 +25,12 @@ class FluentHandlerTest extends \TestCase
     public function testLogHandler()
     {
         $this->handler->handle([
-            'message' => 'testing',
-            'level' => \Monolog\Logger::DEBUG,
-            'extra' => [],
-            'channel' => 'testing',
+            'message'    => 'testing',
+            'level'      => \Monolog\Logger::DEBUG,
+            'extra'      => [],
+            'channel'    => 'testing',
             'level_name' => 'testing',
-            'context' => ['testing']
+            'context'    => ['testing'],
         ]);
         $this->assertFileExists(__DIR__ . '/tmp/put.log');
         $log = $this->filesystem->get(__DIR__ . '/tmp/put.log');
@@ -46,13 +48,35 @@ class FluentHandlerTest extends \TestCase
             '{{channel}}.{{level_name}}.{{testing}}'
         );
         $handler->handle([
-            'message' => 'testing',
-            'level' => \Monolog\Logger::DEBUG,
-            'extra' => [],
-            'channel' => 'testing',
+            'message'    => 'testing',
+            'level'      => \Monolog\Logger::DEBUG,
+            'extra'      => [],
+            'channel'    => 'testing',
             'level_name' => 'testing',
-            'context' => ['testing']
+            'context'    => ['testing'],
         ]);
+    }
+
+    public function testShouldReturnContextExceptionAsString()
+    {
+        $this->handler->handle([
+            'message'    => 'testing',
+            'level'      => \Monolog\Logger::DEBUG,
+            'extra'      => [],
+            'channel'    => 'testing',
+            'level_name' => 'testing',
+            'context'    => [
+                'testing',
+                'exception' => new \Exception('something wrong'),
+            ],
+        ]);
+        $this->assertFileExists(__DIR__ . '/tmp/put.log');
+        $log = $this->filesystem->get(__DIR__ . '/tmp/put.log');
+        list($_, $data) = (unserialize($log));
+        $this->assertRegExp(
+            "/FluentHandlerTest->testShouldReturnContextExceptionAsString/i",
+            $data['context']
+        );
     }
 
     protected function tearDown()
@@ -63,7 +87,7 @@ class FluentHandlerTest extends \TestCase
 
 class stubLogger implements \Fluent\Logger\LoggerInterface
 {
-    /** @var \Illuminate\Filesystem\Filesystem  */
+    /** @var \Illuminate\Filesystem\Filesystem */
     protected $filesystem;
 
     public function __construct(\Illuminate\Filesystem\Filesystem $filesystem)

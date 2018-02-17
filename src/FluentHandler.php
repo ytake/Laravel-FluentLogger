@@ -13,7 +13,7 @@ declare(strict_types=1);
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
  *
- * Copyright (c) 2015-2017 Yuuki Takezawa
+ * Copyright (c) 2015-2018 Yuuki Takezawa
  *
  */
 
@@ -103,25 +103,31 @@ class FluentHandler extends AbstractProcessingHandler
 
     /**
      * returns the context
-     * @return array | string
+     *
+     * @param mixed $context
+     *
+     * @return array|string
      */
     protected function getContext($context)
     {
         if ($this->contextHasException($context)) {
             return $this->getContextExceptionTrace($context);
         }
+
         return $context;
     }
 
     /**
      * Identifies the content type of the given $context
+     *
      * @param  mixed $context
+     *
      * @return bool
      */
     protected function contextHasException($context): bool
     {
         return (
-                is_array($context)
+            is_array($context)
             && array_key_exists('exception', $context)
             && $context['exception'] instanceof \Exception
         );
@@ -129,14 +135,16 @@ class FluentHandler extends AbstractProcessingHandler
 
     /**
      * Returns the entire exception trace as a string
+     *
      * @param  array $context
+     *
      * @return string
      */
     protected function getContextExceptionTrace(array $context): string
     {
         return $context['exception']->getTraceAsString();
     }
-    
+
     /**
      * @return LoggerInterface
      */

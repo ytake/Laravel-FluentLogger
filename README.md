@@ -29,9 +29,11 @@ or composer.json
 
 ```json
 "require": {
-  "ytake/laravel-fluent-logger": "^2.0"
+  "ytake/laravel-fluent-logger": "^3.0"
 },
 ```
+
+**Supported Auto-Discovery(^Laravel5.5)**
 
 ## for laravel
 your config/app.php
@@ -61,15 +63,81 @@ $ php artisan vendor:publish --tag=log
 $ php artisan vendor:publish --provider="Ytake\LaravelFluent\LogServiceProvider"
 ```
 
-### Always Added Push Fluentd Handler
+
+
+### Config
 
 edit config/fluent.php
 ```php
-/**
- * always added fluentd log handler
- * example. true => daily and fluentd
- */
-'always' => true,
+return [
+
+    'host' => env('FLUENTD_HOST', '127.0.0.1'),
+
+    'port' => env('FLUENTD_PORT', 24224),
+
+    /** @see https://github.com/fluent/fluent-logger-php/blob/master/src/FluentLogger.php */
+    'options' => [],
+
+    /** @see https://github.com/fluent/fluent-logger-php/blob/master/src/PackerInterface.php */
+    // specified class name
+    'packer' => null,
+
+    'tagFormat' => '{{channel}}.{{level_name}}',
+];
+
+```
+
+added config/logging.php
+
+```php
+return [
+    'channels' => [
+        'stack' => [
+            'driver' => 'stack',
+            // always added fluentd log handler
+            // 'channels' => ['single', 'fluent'],
+            // fluentd only
+            'channels' => ['fluent'],
+        ],
+
+        'fluent' => [
+            'driver' => 'fluent',
+            'level' => 'debug',
+        ],
+        
+        'single' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/laravel.log'),
+            'level' => 'debug',
+        ],
+
+        'daily' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/laravel.log'),
+            'level' => 'debug',
+            'days' => 7,
+        ],
+
+        'slack' => [
+            'driver' => 'slack',
+            'url' => env('LOG_SLACK_WEBHOOK_URL'),
+            'username' => 'Laravel Log',
+            'emoji' => ':boom:',
+            'level' => 'critical',
+        ],
+
+        'syslog' => [
+            'driver' => 'syslog',
+            'level' => 'debug',
+        ],
+
+        'errorlog' => [
+            'driver' => 'errorlog',
+            'level' => 'debug',
+        ],
+    ],
+];
+
 ```
 
 ### All logs to fluentd
