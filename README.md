@@ -18,7 +18,7 @@ fluent logger for laravel
 
 ## usage
 
-### Installation For Laravel and Lumen
+### Installation For Laravel
 Require this package with Composer
 
 ```bash
@@ -63,7 +63,12 @@ $ php artisan vendor:publish --tag=log
 $ php artisan vendor:publish --provider="Ytake\LaravelFluent\LogServiceProvider"
 ```
 
+## for Lumen
 
+override  
+
+\Laravel\Lumen\Application@registerLogBindings
+  
 
 ### Config
 
@@ -166,33 +171,7 @@ example (production)
  and more
 
 ## for lumen
-Extend \Laravel\Lumen\Application and override the  getMonologHandler() method to set up your own logging config.
 
-example
-```php
-<?php
-
-namespace App\Foundation;
-
-use Monolog\Logger;
-use Fluent\Logger\FluentLogger;
-use Ytake\LaravelFluent\FluentHandler;
-
-class Application extends \Laravel\Lumen\Application
-{
-    /**
-     * @return FluentHandler
-     */
-    protected function getMonologHandler()
-    {
-        return new FluentHandler(
-            new FluentLogger(env('FLUENTD_HOST', '127.0.0.1'), env('FLUENTD_PORT', 24224), []),
-            Logger::DEBUG
-        );
-    }
-}
-
-```
 
 ## fluentd config sample(lumen)
 
