@@ -11,7 +11,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
- * Copyright (c) 2015 Yuuki Takezawa
+ * Copyright (c) 2015-2018 Yuuki Takezawa
  */
 
 return [
@@ -20,5 +20,12 @@ return [
 
     'port' => 24224,
 
+    /** @see https://github.com/fluent/fluent-logger-php/blob/master/src/FluentLogger.php */
     'options' => [],
+
+    /** @see https://github.com/fluent/fluent-logger-php/blob/master/src/PackerInterface.php */
+    // specified class name
+    'packer' => null,
+
+    'tagFormat' => '{{channel}}.{{level_name}}',
 ];

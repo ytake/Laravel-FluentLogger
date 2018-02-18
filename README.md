@@ -18,7 +18,7 @@ fluent logger for laravel
 
 ## usage
 
-### Installation For Laravel and Lumen
+### Installation For Laravel
 Require this package with Composer
 
 ```bash
@@ -29,12 +29,16 @@ or composer.json
 
 ```json
 "require": {
-  "ytake/laravel-fluent-logger": "^2.0"
+  "ytake/laravel-fluent-logger": "^3.0"
 },
 ```
 
+**Supported Auto-Discovery(^Laravel5.5)**
+
 ## for laravel
+
 your config/app.php
+
 ```php
 'providers' => [
     \Ytake\LaravelFluent\LogServiceProvider::class,
@@ -61,22 +65,109 @@ $ php artisan vendor:publish --tag=log
 $ php artisan vendor:publish --provider="Ytake\LaravelFluent\LogServiceProvider"
 ```
 
-### Always Added Push Fluentd Handler
+## for Lumen
+
+use `Ytake\LaravelFluent\LumenLogServiceProvider`
+  
+bootstrap/app.php
+
+```php
+$app->register(\Ytake\LaravelFluent\LumenLogServiceProvider::class);
+```
+
+Lumen will use your copy of the configuration file if you copy and paste one of the files into a config directory within your project root.
+
+```bash
+cp vendor/ytake/laravel-fluent-logger/src/config/fluent.php config/
+```
+
+### Config
 
 edit config/fluent.php
 ```php
-/**
- * always added fluentd log handler
- * example. true => daily and fluentd
- */
-'always' => true,
+return [
+
+    'host' => env('FLUENTD_HOST', '127.0.0.1'),
+
+    'port' => env('FLUENTD_PORT', 24224),
+
+    /** @see https://github.com/fluent/fluent-logger-php/blob/master/src/FluentLogger.php */
+    'options' => [],
+
+    /** @see https://github.com/fluent/fluent-logger-php/blob/master/src/PackerInterface.php */
+    // specified class name
+    'packer' => null,
+
+    'tagFormat' => '{{channel}}.{{level_name}}',
+];
+
 ```
 
-### All logs to fluentd
+added config/logging.php
 
-edit config/app.php
 ```php
-'log' => 'fluent',
+return [
+    'channels' => [
+        'stack' => [
+            'driver' => 'stack',
+            // always added fluentd log handler
+            // 'channels' => ['single', 'fluent'],
+            // fluentd only
+            'channels' => ['fluent'],
+        ],
+
+        'fluent' => [
+            'driver' => 'fluent',
+            'level' => 'debug',
+        ],
+        
+        'single' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/laravel.log'),
+            'level' => 'debug',
+        ],
+
+        'daily' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/laravel.log'),
+            'level' => 'debug',
+            'days' => 7,
+        ],
+
+        'slack' => [
+            'driver' => 'slack',
+            'url' => env('LOG_SLACK_WEBHOOK_URL'),
+            'username' => 'Laravel Log',
+            'emoji' => ':boom:',
+            'level' => 'critical',
+        ],
+
+        'syslog' => [
+            'driver' => 'syslog',
+            'level' => 'debug',
+        ],
+
+        'errorlog' => [
+            'driver' => 'errorlog',
+            'level' => 'debug',
+        ],
+    ],
+];
+
+```
+
+or custom / use `via`
+
+```php
+return [
+    'channels' => [
+        'custom' => [
+            'driver' => 'custom',
+            'via' => \Ytake\LaravelFluent\FluentLogManager::class,
+        ],
+    ]
+];
+
 ```
 
 ## fluentd config sample
@@ -98,33 +189,7 @@ example (production)
  and more
 
 ## for lumen
-Extend \Laravel\Lumen\Application and override the  getMonologHandler() method to set up your own logging config.
 
-example
-```php
-<?php
-
-namespace App\Foundation;
-
-use Monolog\Logger;
-use Fluent\Logger\FluentLogger;
-use Ytake\LaravelFluent\FluentHandler;
-
-class Application extends \Laravel\Lumen\Application
-{
-    /**
-     * @return FluentHandler
-     */
-    protected function getMonologHandler()
-    {
-        return new FluentHandler(
-            new FluentLogger(env('FLUENTD_HOST', '127.0.0.1'), env('FLUENTD_PORT', 24224), []),
-            Logger::DEBUG
-        );
-    }
-}
-
-```
 
 ## fluentd config sample(lumen)
 

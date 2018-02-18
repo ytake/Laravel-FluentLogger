@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -15,18 +16,22 @@
  * Copyright (c) 2015-2018 Yuuki Takezawa
  *
  */
-return [
 
-    'host' => env('FLUENTD_HOST', '127.0.0.1'),
+namespace Ytake\LaravelFluent;
 
-    'port' => env('FLUENTD_PORT', 24224),
+/**
+ * Class LumenLogServiceProvider
+ */
+final class LumenLogServiceProvider extends LoggableServiceProvider
+{
+    protected function resolveLogManager(): void
+    {
+        $configPath = __DIR__ . '/config/fluent.php';
+        $this->mergeConfigFrom($configPath, 'fluent');
+        $this->app->singleton(FluentLogManager::class, function ($app) {
+            $app->configure('fluent');
 
-    /** @see https://github.com/fluent/fluent-logger-php/blob/master/src/FluentLogger.php */
-    'options' => [],
-
-    /** @see https://github.com/fluent/fluent-logger-php/blob/master/src/PackerInterface.php */
-    // specified class name
-    'packer' => null,
-
-    'tagFormat' => '{{channel}}.{{level_name}}',
-];
+            return new FluentLogManager($app);
+        });
+    }
+}
