@@ -36,7 +36,9 @@ or composer.json
 **Supported Auto-Discovery(^Laravel5.5)**
 
 ## for laravel
+
 your config/app.php
+
 ```php
 'providers' => [
     \Ytake\LaravelFluent\LogServiceProvider::class,
@@ -65,10 +67,19 @@ $ php artisan vendor:publish --provider="Ytake\LaravelFluent\LogServiceProvider"
 
 ## for Lumen
 
-override  
-
-\Laravel\Lumen\Application@registerLogBindings
+use `Ytake\LaravelFluent\LumenLogServiceProvider`
   
+bootstrap/app.php
+
+```php
+$app->register(\Ytake\LaravelFluent\LumenLogServiceProvider::class);
+```
+
+Lumen will use your copy of the configuration file if you copy and paste one of the files into a config directory within your project root.
+
+```bash
+cp vendor/ytake/laravel-fluent-logger/src/config/fluent.php config/
+```
 
 ### Config
 

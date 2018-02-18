@@ -20,13 +20,14 @@ declare(strict_types=1);
 namespace Ytake\LaravelFluent;
 
 use Fluent\Logger\FluentLogger;
+use Illuminate\Log\LogManager;
 use Monolog\Logger as Monolog;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class LogManager
+ * Class FluentLogManager
  */
-class LogManager extends \Illuminate\Log\LogManager
+final class FluentLogManager extends LogManager
 {
     /**
      * @var \Illuminate\Contracts\Container\Container
@@ -62,5 +63,15 @@ class LogManager extends \Illuminate\Log\LogManager
                 )
             ),
         ]);
+    }
+
+    /**
+     * @param array $config
+     *
+     * @return LoggerInterface
+     */
+    public function __invoke(array $config): LoggerInterface
+    {
+        return $this->createFluentDriver($config);
     }
 }

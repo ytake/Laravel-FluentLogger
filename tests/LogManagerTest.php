@@ -1,20 +1,20 @@
 <?php
 declare(strict_types=1);
 
-use Ytake\LaravelFluent\LogManager;
+use Ytake\LaravelFluent\FluentLogManager;
 
 /**
  * Class LogManagerTest
  */
 final class LogManagerTest extends TestCase
 {
-    /** @var LogManager */
+    /** @var FluentLogManager */
     private $logManager;
 
     protected function setUp()
     {
         parent::setUp();
-        $this->logManager = new LogManager($this->app);
+        $this->logManager = new FluentLogManager($this->app);
     }
 
     public function testShouldBeLoggerInterface(): void

@@ -20,16 +20,16 @@ declare(strict_types=1);
 namespace Ytake\LaravelFluent;
 
 /**
- * Class LogServiceProvider
+ * Class LumenLogServiceProvider
  */
-final class LogServiceProvider extends LoggableServiceProvider
+final class LumenLogServiceProvider extends LoggableServiceProvider
 {
     protected function resolveLogManager(): void
     {
         $configPath = __DIR__ . '/config/fluent.php';
         $this->mergeConfigFrom($configPath, 'fluent');
-        $this->publishes([$configPath => config_path('fluent.php')], 'log');
         $this->app->singleton(FluentLogManager::class, function ($app) {
+            $app->configure('fluent');
 
             return new FluentLogManager($app);
         });
