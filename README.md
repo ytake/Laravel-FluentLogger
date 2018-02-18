@@ -156,11 +156,18 @@ return [
 
 ```
 
-### All logs to fluentd
+or custom / use `via`
 
-edit config/app.php
 ```php
-'log' => 'fluent',
+return [
+    'channels' => [
+        'custom' => [
+            'driver' => 'custom',
+            'via' => \Ytake\LaravelFluent\FluentLogManager::class,
+        ],
+    ]
+];
+
 ```
 
 ## fluentd config sample
