@@ -21,6 +21,7 @@ namespace Ytake\LaravelFluent;
 
 use Fluent\Logger\FluentLogger;
 use Illuminate\Log\LogManager;
+use Monolog\Handler\HandlerInterface;
 use Monolog\Logger as Monolog;
 use Psr\Log\LoggerInterface;
 
@@ -41,7 +42,17 @@ final class FluentLogManager extends LogManager
      */
     protected function createFluentDriver(array $config): LoggerInterface
     {
+        return new Monolog($this->parseChannel($config), [
+            $this->prepareHandler(
+                $this->createFluentHandler($config)
+            ),
+        ]);
+    }
+
+    private function createFluentHandler(array $config) : HandlerInterface
+    {
         $configure = $this->app['config']['fluent'];
+
         $packer = null;
         if (!is_null($configure['packer'])) {
             if (class_exists($configure['packer'])) {
@@ -49,20 +60,24 @@ final class FluentLogManager extends LogManager
             }
         }
 
-        return new Monolog($this->parseChannel($config), [
-            $this->prepareHandler(
-                new FluentHandler(
-                    new FluentLogger(
-                        $configure['host'] ?? FluentLogger::DEFAULT_ADDRESS,
-                        (int)$configure['port'] ?? FluentLogger::DEFAULT_LISTEN_PORT,
-                        $configure['options'] ?? [],
-                        $packer
-                    ),
-                    $configure['tagFormat'] ?? null,
-                    $this->level($config)
-                )
+        $fluentHandler = FluentHandler::class;
+        if (!is_null($configure['handler'])) {
+            if (class_exists($configure['handler'])) {
+                $fluentHandler = $configure['handler'];
+            }
+        }
+
+
+        return new $fluentHandler(
+            new FluentLogger(
+                $configure['host'] ?? FluentLogger::DEFAULT_ADDRESS,
+                (int)$configure['port'] ?? FluentLogger::DEFAULT_LISTEN_PORT,
+                $configure['options'] ?? [],
+                $packer
             ),
-        ]);
+            $configure['tagFormat'] ?? null,
+            $this->level($config)
+        );
     }
 
     /**
