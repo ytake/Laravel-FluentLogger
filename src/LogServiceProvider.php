@@ -30,7 +30,6 @@ final class LogServiceProvider extends LoggableServiceProvider
         $this->mergeConfigFrom($configPath, 'fluent');
         $this->publishes([$configPath => config_path('fluent.php')], 'log');
         $this->app->singleton(FluentLogManager::class, function ($app) {
-
             return new FluentLogManager($app);
         });
     }
