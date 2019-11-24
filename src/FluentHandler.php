@@ -64,7 +64,7 @@ class FluentHandler extends AbstractProcessingHandler
     /**
      * @param array $record
      */
-    protected function write(array $record)
+    protected function write(array $record): void
     {
         $tag = $this->populateTag($record);
         $this->logger->post(
