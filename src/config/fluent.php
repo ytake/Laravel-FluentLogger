@@ -28,5 +28,8 @@ return [
     // specified class name
     'packer' => null,
 
+    // optionally override Ytake\LaravelFluent\FluentHandler class to customize behaviour
+    'handler' => null,
+
     'tagFormat' => '{{channel}}.{{level_name}}',
 ];

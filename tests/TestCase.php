@@ -1,4 +1,9 @@
 <?php
+declare(strict_types=1);
+
+use Illuminate\Container\Container;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Config\Repository;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -11,14 +16,14 @@ class TestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @return \Illuminate\Container\Container
+     * @return Container
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    protected function createApplicationContainer()
+    protected function createApplicationContainer(): Container
     {
-        $container = new \Illuminate\Container\Container;
-        $filesystem = new \Illuminate\Filesystem\Filesystem;
-        $container->instance('config', new \Illuminate\Config\Repository);
+        $container = $this->getExtendedContainer();
+        $filesystem = new Filesystem();
+        $container->instance('config', new Repository());
         $container['config']
             ->set("fluent", $filesystem->getRequire(__DIR__ . '/config/fluent.php'));
         $container['config']
@@ -27,5 +32,15 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $eventProvider = new \Illuminate\Events\EventServiceProvider($container);
         $eventProvider->register();
         return $container;
+    }
+
+    protected function getExtendedContainer(): Container
+    {
+        return new class() extends Container {
+            public function storagePath(): string
+            {
+                return __DIR__ . '/storages';
+            }
+        };
     }
 }

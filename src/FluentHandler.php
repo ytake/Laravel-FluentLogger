@@ -23,6 +23,12 @@ use Fluent\Logger\LoggerInterface;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 
+use function str_replace;
+use function preg_match_all;
+use function sprintf;
+use function is_array;
+use function array_key_exists;
+
 /**
  * Class FluentHandler
  */
@@ -58,7 +64,7 @@ class FluentHandler extends AbstractProcessingHandler
     /**
      * @param array $record
      */
-    protected function write(array $record)
+    protected function write(array $record): void
     {
         $tag = $this->populateTag($record);
         $this->logger->post(

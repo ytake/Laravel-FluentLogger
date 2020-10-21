@@ -20,18 +20,22 @@ declare(strict_types=1);
 namespace Ytake\LaravelFluent;
 
 use Fluent\Logger\FluentLogger;
+use Fluent\Logger\PackerInterface;
 use Illuminate\Log\LogManager;
+use Monolog\Handler\HandlerInterface;
 use Monolog\Logger as Monolog;
 use Psr\Log\LoggerInterface;
+
+use function is_null;
+use function class_exists;
+use function strval;
 
 /**
  * Class FluentLogManager
  */
 final class FluentLogManager extends LogManager
 {
-    /**
-     * @var \Illuminate\Contracts\Container\Container
-     */
+    /** @var \Illuminate\Contracts\Container\Container */
     protected $app;
 
     /**
@@ -41,28 +45,32 @@ final class FluentLogManager extends LogManager
      */
     protected function createFluentDriver(array $config): LoggerInterface
     {
-        $configure = $this->app['config']['fluent'];
-        $packer = null;
-        if (!is_null($configure['packer'])) {
-            if (class_exists($configure['packer'])) {
-                $packer = $this->app->make($configure['packer']);
-            }
-        }
-
         return new Monolog($this->parseChannel($config), [
             $this->prepareHandler(
-                new FluentHandler(
-                    new FluentLogger(
-                        $configure['host'] ?? FluentLogger::DEFAULT_ADDRESS,
-                        (int)$configure['port'] ?? FluentLogger::DEFAULT_LISTEN_PORT,
-                        $configure['options'] ?? [],
-                        $packer
-                    ),
-                    $configure['tagFormat'] ?? null,
-                    $this->level($config)
-                )
+                $this->createFluentHandler($config)
             ),
         ]);
+    }
+
+    /**
+     * @param array $config
+     *
+     * @return HandlerInterface
+     */
+    private function createFluentHandler(array $config): HandlerInterface
+    {
+        $configure = $this->app['config']['fluent'];
+        $fluentHandler = $this->detectHandler($configure);
+        return new $fluentHandler(
+            new FluentLogger(
+                $configure['host'] ?? FluentLogger::DEFAULT_ADDRESS,
+                (int)$configure['port'] ?? FluentLogger::DEFAULT_LISTEN_PORT,
+                $configure['options'] ?? [],
+                $this->detectPacker($configure)
+            ),
+            $configure['tagFormat'] ?? null,
+            $this->level($config)
+        );
     }
 
     /**
@@ -73,5 +81,44 @@ final class FluentLogManager extends LogManager
     public function __invoke(array $config): LoggerInterface
     {
         return $this->createFluentDriver($config);
+    }
+
+    /**
+     * @return string
+     */
+    protected function defaultHandler(): string
+    {
+        return FluentHandler::class;
+    }
+
+    /**
+     * @param array $configure
+     *
+     * @return PackerInterface|null
+     */
+    protected function detectPacker(array $configure): ?PackerInterface
+    {
+        if (!is_null($configure['packer'])) {
+            if (class_exists($configure['packer'])) {
+                return $this->app->make($configure['packer']);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param array $configure
+     *
+     * @return string
+     */
+    protected function detectHandler(array $configure): string
+    {
+        $handler = $configure['handler'] ?? null;
+        if (!is_null($handler)) {
+            if (class_exists($handler)) {
+                return strval($handler);
+            }
+        }
+        return $this->defaultHandler();
     }
 }
