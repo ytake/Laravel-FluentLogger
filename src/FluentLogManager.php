@@ -33,7 +33,7 @@ use function strval;
 /**
  * Class FluentLogManager
  */
-final class FluentLogManager extends LogManager
+class FluentLogManager extends LogManager
 {
     /** @var \Illuminate\Contracts\Container\Container */
     protected $app;
