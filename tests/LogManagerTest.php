@@ -11,7 +11,7 @@ final class LogManagerTest extends TestCase
     /** @var FluentLogManager */
     private $logManager;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->logManager = new FluentLogManager($this->app);
