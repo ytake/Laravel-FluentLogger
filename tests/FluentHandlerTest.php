@@ -8,7 +8,7 @@ class FluentHandlerTest extends \TestCase
     /** @var \Illuminate\Filesystem\Filesystem */
     protected $filesystem;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->filesystem = new \Illuminate\Filesystem\Filesystem;
@@ -38,15 +38,14 @@ class FluentHandlerTest extends \TestCase
         $this->assertSame('testing.testing', $tag);
     }
 
-    /**
-     * @expectedException \LogicException
-     */
+
     public function testShouldThrowExceptionForMissingTag()
     {
         $handler = new \Ytake\LaravelFluent\FluentHandler(
             new stubLogger($this->filesystem),
             '{{channel}}.{{level_name}}.{{testing}}'
         );
+        $this->expectException(\LogicException::class);
         $handler->handle([
             'message'    => 'testing',
             'level'      => \Monolog\Logger::DEBUG,
@@ -73,13 +72,13 @@ class FluentHandlerTest extends \TestCase
         $this->assertFileExists(__DIR__ . '/tmp/put.log');
         $log = $this->filesystem->get(__DIR__ . '/tmp/put.log');
         list($_, $data) = (unserialize($log));
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             "/FluentHandlerTest->testShouldReturnContextExceptionAsString/i",
             $data['context']
         );
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->filesystem->delete(__DIR__ . '/tmp/put.log');
     }
