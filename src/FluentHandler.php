@@ -135,7 +135,7 @@ class FluentHandler extends AbstractProcessingHandler
         return (
             is_array($context)
             && array_key_exists('exception', $context)
-            && $context['exception'] instanceof \Exception
+            && $context['exception'] instanceof \Throwable
         );
     }
 
