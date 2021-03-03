@@ -28,7 +28,7 @@ or composer.json
 
 ```json
 "require": {
-  "ytake/laravel-fluent-logger": "^3.0"
+  "ytake/laravel-fluent-logger": "^5.0"
 },
 ```
 
