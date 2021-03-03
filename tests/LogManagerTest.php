@@ -1,17 +1,22 @@
 <?php
+
 declare(strict_types=1);
 
+namespace Tests;
+
+use Fluent\Logger\FluentLogger;
+use Illuminate\Log\Logger;
+use Ytake\LaravelFluent\FluentHandler;
 use Ytake\LaravelFluent\FluentLogManager;
 
-/**
- * Class LogManagerTest
- */
+use function assert;
+
 final class LogManagerTest extends TestCase
 {
     /** @var FluentLogManager */
     private $logManager;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->logManager = new FluentLogManager($this->app);
@@ -21,30 +26,22 @@ final class LogManagerTest extends TestCase
     {
         $this->logManager->setDefaultDriver('fluent');
         $stackLogger = $this->logManager->stack(['fluent']);
-        $this->assertInstanceOf(\Illuminate\Log\Logger::class, $stackLogger);
+        $this->assertInstanceOf(Logger::class, $stackLogger);
     }
 
     public function testShouldBeReturnFluentLogger(): void
     {
-        $this->app['config']->set('fluent.packer', stubPacker::class);
+        $this->app['config']->set('fluent.packer', StubPacker::class);
         $this->logManager->setDefaultDriver('fluent');
-        /** @var \Illuminate\Log\Logger $logger */
+        /** @var Logger logDriver */
         $logDriver = $this->logManager->driver();
-        $this->assertInstanceOf(\Illuminate\Log\Logger::class, $logDriver);
-        /** @var Monolog\Logger $logger */
+        $this->assertInstanceOf(Logger::class, $logDriver);
         $logger = $logDriver->getLogger();
+        assert($logger instanceof \Monolog\Logger);
         $handler = $logger->getHandlers()[0];
-        $this->assertInstanceOf(\Ytake\LaravelFluent\FluentHandler::class, $handler);
-        /** @var \Ytake\LaravelFluent\FluentHandler $handler */
-        $this->assertInstanceOf(\Fluent\Logger\FluentLogger::class, $fluent = $handler->getLogger());
-        $this->assertInstanceOf(stubPacker::class, $fluent->getPacker());
-    }
-}
-
-class stubPacker implements \Fluent\Logger\PackerInterface
-{
-    public function pack(\Fluent\Logger\Entity $entity)
-    {
-        return serialize([$entity->getTag(), $entity->getTime(), $entity->getData()]);
+        $this->assertInstanceOf(FluentHandler::class, $handler);
+        /** @var FluentHandler $handler */
+        $this->assertInstanceOf(FluentLogger::class, $fluent = $handler->getLogger());
+        $this->assertInstanceOf(StubPacker::class, $fluent->getPacker());
     }
 }

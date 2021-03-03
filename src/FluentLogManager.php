@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /**
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -13,35 +12,38 @@ declare(strict_types=1);
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
  *
- * Copyright (c) 2015-2018 Yuuki Takezawa
- *
+ * Copyright (c) 2015-2021 Yuuki Takezawa
  */
+
+declare(strict_types=1);
 
 namespace Ytake\LaravelFluent;
 
 use Fluent\Logger\FluentLogger;
 use Fluent\Logger\PackerInterface;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Log\LogManager;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Logger as Monolog;
 use Psr\Log\LoggerInterface;
 
-use function is_null;
 use function class_exists;
+use function is_null;
 use function strval;
 
 /**
- * Class FluentLogManager
+ * FluentLogManager
  */
 final class FluentLogManager extends LogManager
 {
-    /** @var \Illuminate\Contracts\Container\Container */
+    /** @var Container */
     protected $app;
 
     /**
-     * @param array $config
-     *
+     * @param array<string, mixed> $config
      * @return LoggerInterface
+     * @throws BindingResolutionException
      */
     protected function createFluentDriver(array $config): LoggerInterface
     {
@@ -53,13 +55,13 @@ final class FluentLogManager extends LogManager
     }
 
     /**
-     * @param array $config
-     *
+     * @param array<string, mixed> $config
      * @return HandlerInterface
+     * @throws BindingResolutionException
      */
     private function createFluentHandler(array $config): HandlerInterface
     {
-        $configure = $this->app['config']['fluent'];
+        $configure = $this->app->make('config')['fluent'];
         $fluentHandler = $this->detectHandler($configure);
         return new $fluentHandler(
             new FluentLogger(
@@ -74,9 +76,10 @@ final class FluentLogManager extends LogManager
     }
 
     /**
-     * @param array $config
+     * @param array<string, mixed> $config
      *
      * @return LoggerInterface
+     * @throws BindingResolutionException
      */
     public function __invoke(array $config): LoggerInterface
     {
@@ -92,9 +95,10 @@ final class FluentLogManager extends LogManager
     }
 
     /**
-     * @param array $configure
+     * @param array<string, mixed> $configure
      *
      * @return PackerInterface|null
+     * @throws BindingResolutionException
      */
     protected function detectPacker(array $configure): ?PackerInterface
     {
@@ -107,7 +111,7 @@ final class FluentLogManager extends LogManager
     }
 
     /**
-     * @param array $configure
+     * @param array<string, mixed> $configure
      *
      * @return string
      */
