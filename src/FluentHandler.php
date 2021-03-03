@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /**
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -13,24 +12,27 @@ declare(strict_types=1);
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
  *
- * Copyright (c) 2015-2018 Yuuki Takezawa
- *
+ * Copyright (c) 2015-2021 Yuuki Takezawa
  */
+
+declare(strict_types=1);
 
 namespace Ytake\LaravelFluent;
 
+use Exception;
 use Fluent\Logger\LoggerInterface;
+use LogicException;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 
-use function str_replace;
+use function array_key_exists;
+use function is_array;
 use function preg_match_all;
 use function sprintf;
-use function is_array;
-use function array_key_exists;
+use function str_replace;
 
 /**
- * Class FluentHandler
+ * FluentHandler
  */
 class FluentHandler extends AbstractProcessingHandler
 {
@@ -41,8 +43,6 @@ class FluentHandler extends AbstractProcessingHandler
     protected $tagFormat = '{{channel}}.{{level_name}}';
 
     /**
-     * FluentHandler constructor.
-     *
      * @param LoggerInterface $logger
      * @param null|string     $tagFormat
      * @param int             $level
@@ -62,7 +62,7 @@ class FluentHandler extends AbstractProcessingHandler
     }
 
     /**
-     * @param array $record
+     * @param array<string, mixed> $record
      */
     protected function write(array $record): void
     {
@@ -78,7 +78,7 @@ class FluentHandler extends AbstractProcessingHandler
     }
 
     /**
-     * @param array $record
+     * @param array<string, mixed> $record
      *
      * @return string
      */
@@ -88,17 +88,17 @@ class FluentHandler extends AbstractProcessingHandler
     }
 
     /**
-     * @param array  $record
+     * @param array<string, mixed>  $record
      * @param string $tag
      *
      * @return string
      */
     protected function processFormat(array $record, string $tag): string
     {
-        if (preg_match_all('/\{\{(.*?)\}\}/', $tag, $matches)) {
+        if (preg_match_all('/{{(.*?)}}/', $tag, $matches)) {
             foreach ($matches[1] as $match) {
                 if (!isset($record[$match])) {
-                    throw new \LogicException('No such field in the record');
+                    throw new LogicException('No such field in the record');
                 }
                 $tag = str_replace(sprintf('{{%s}}', $match), $record[$match], $tag);
             }
@@ -112,7 +112,7 @@ class FluentHandler extends AbstractProcessingHandler
      *
      * @param mixed $context
      *
-     * @return array|string
+     * @return mixed
      */
     protected function getContext($context)
     {
@@ -135,15 +135,15 @@ class FluentHandler extends AbstractProcessingHandler
         return (
             is_array($context)
             && array_key_exists('exception', $context)
-            && $context['exception'] instanceof \Exception
+            && $context['exception'] instanceof Exception
         );
     }
 
     /**
      * Returns the entire exception trace as a string
      *
-     * @param  array $context
-     *
+     * @param  array<string, mixed> $context
+
      * @return string
      */
     protected function getContextExceptionTrace(array $context): string
