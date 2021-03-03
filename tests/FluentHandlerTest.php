@@ -72,6 +72,29 @@ final class FluentHandlerTest extends TestCase
         ]);
     }
 
+    public function testShouldBeOutputInSpecifiedFormat(): void
+    {
+        $handler = new FluentHandler(
+            new StubLogger($this->filesystem),
+            '{{channel}}.{{level_name}}.{{testing}}.{{foo}}'
+        );
+        $handler->handle([
+            'message' => 'testing',
+            'level' => Logger::DEBUG,
+            'extra' => [],
+            'channel' => 'testing',
+            'level_name' => 'testing',
+            'testing' => 'logger',
+            'foo' => 'bar',
+            'context' => ['testing'],
+        ]);
+        $this->assertFileExists(__DIR__ . '/tmp/put.log');
+        $array = unserialize(
+            $this->filesystem->get(__DIR__ . '/tmp/put.log')
+        );
+        $this->assertSame('testing.testing.logger.bar', $array[0]);
+    }
+
     /**
      * @throws FileNotFoundException
      */
