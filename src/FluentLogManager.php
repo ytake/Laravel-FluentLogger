@@ -63,7 +63,8 @@ final class FluentLogManager extends LogManager
     {
         $configure = $this->app->make('config')['fluent'];
         $fluentHandler = $this->detectHandler($configure);
-        return new $fluentHandler(
+
+        $handler = new $fluentHandler(
             new FluentLogger(
                 $configure['host'] ?? FluentLogger::DEFAULT_ADDRESS,
                 (int)$configure['port'] ?? FluentLogger::DEFAULT_LISTEN_PORT,
@@ -73,6 +74,18 @@ final class FluentLogManager extends LogManager
             $configure['tagFormat'] ?? null,
             $this->level($config)
         );
+
+        if (isset($configure['processors']) && is_array($configure['processors'])) {
+            foreach ($configure['processors'] as $processor) {
+                if (is_string($processor) && class_exists($processor)) {
+                    $processor = $this->app->make($processor);
+                }
+
+                $handler->pushProcessor($processor);
+            }
+        }
+
+        return $handler;
     }
 
     /**
