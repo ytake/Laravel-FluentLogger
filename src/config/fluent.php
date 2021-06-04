@@ -31,5 +31,7 @@ return [
     // optionally override Ytake\LaravelFluent\FluentHandler class to customize behaviour
     'handler' => null,
 
+    'processors' => [],
+
     'tagFormat' => '{{channel}}.{{level_name}}',
 ];
