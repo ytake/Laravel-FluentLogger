@@ -93,6 +93,11 @@ return [
     /** @see https://github.com/fluent/fluent-logger-php/blob/master/src/PackerInterface.php */
     // specified class name
     'packer' => null,
+    
+    // optionally override Ytake\LaravelFluent\FluentHandler class to customize behaviour
+    'handler' => null,
+    
+    'processors' => [],
 
     'tagFormat' => '{{channel}}.{{level_name}}',
 ];
@@ -193,6 +198,39 @@ example (production)
 <match lumen.**>
   type stdout
 </match>
+```
+
+## Monolog processors
+
+You can add processors to the monolog handlers by adding them to the `processors` array within the `fluent.php` config.
+
+config/fluent.php:
+```php
+'processors' => [function($record) {
+    $record['extra']['level'] = $record['level_name'];
+    
+    return $record;
+}],
+```
+
+Alternatively, you can pass the class name of the processor.  This helps keep your config compatible with `config:cache`
+
+config/fluent.php:
+```php
+'processors' => [CustomProcessor::class],
+```
+
+CustomProcessor.php:
+```php
+class CustomProcessor
+{
+    public function __invoke($record)
+    {
+        $record['extra']['level'] = $record['level_name'];
+
+        return $record;
+    }
+}
 ```
 
 ## Author ##

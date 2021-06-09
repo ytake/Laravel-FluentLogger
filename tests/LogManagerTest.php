@@ -6,6 +6,7 @@ namespace Tests;
 
 use Fluent\Logger\FluentLogger;
 use Illuminate\Log\Logger;
+use Monolog\Processor\MemoryUsageProcessor;
 use Ytake\LaravelFluent\FluentHandler;
 use Ytake\LaravelFluent\FluentLogManager;
 
@@ -43,5 +44,49 @@ final class LogManagerTest extends TestCase
         /** @var FluentHandler $handler */
         $this->assertInstanceOf(FluentLogger::class, $fluent = $handler->getLogger());
         $this->assertInstanceOf(StubPacker::class, $fluent->getPacker());
+    }
+
+    /**
+     * This should be valid:
+     *
+     * 'processors' => [new Monolog\Processor\MemoryUsageProcessor()],
+     */
+    public function testAddObjectAsProcessor(): void
+    {
+        $processor = new MemoryUsageProcessor();
+
+        $this->app['config']->set('fluent.processors', [$processor]);
+        $this->logManager->setDefaultDriver('fluent');
+
+        /** @var \Illuminate\Log\Logger $logger */
+        $logDriver = $this->logManager->driver();
+
+        /** @var \Ytake\LaravelFluent\FluentHandler::class $logger */
+        $logger = $logDriver->getLogger()->getHandlers()[0];
+        $actualProcessor = $logger->popProcessor();
+
+        $this->assertEquals($processor, $actualProcessor);
+    }
+
+    /**
+     * This should be valid:
+     *
+     * 'processors' => [Monolog\Processor\MemoryUsageProcessor::class],
+     */
+    public function testAddStringAsProcessor(): void
+    {
+        $processor = MemoryUsageProcessor::class;
+
+        $this->app['config']->set('fluent.processors', [$processor]);
+        $this->logManager->setDefaultDriver('fluent');
+
+        /** @var \Illuminate\Log\Logger $logger */
+        $logDriver = $this->logManager->driver();
+
+        /** @var \Ytake\LaravelFluent\FluentHandler::class $logger */
+        $logger = $logDriver->getLogger()->getHandlers()[0];
+        $actualProcessor = $logger->popProcessor();
+
+        $this->assertInstanceOf(MemoryUsageProcessor::class, $actualProcessor);
     }
 }
