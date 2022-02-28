@@ -19,6 +19,8 @@ checks:
         code_rating: true
         duplication: true
 build:
+    environment:
+        php: 8.0.2
     tests:
         override:
             -
