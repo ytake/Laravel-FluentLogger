@@ -54,6 +54,15 @@ class TestCase extends PHPUnitTestCase
             {
                 return __DIR__ . '/storages';
             }
+
+            /**
+             * Executed by \Illuminate\Log\LogManager.  Exists in Application of Laravel v9
+             * @return bool
+             */
+            public function runningUnitTests()
+            {
+                return true;
+            }
         };
     }
 }
