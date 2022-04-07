@@ -54,6 +54,11 @@ class TestCase extends PHPUnitTestCase
             {
                 return __DIR__ . '/storages';
             }
+
+            public function runningUnitTests(): bool
+            {
+                return true;
+            }
         };
     }
 }

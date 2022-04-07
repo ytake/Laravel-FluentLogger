@@ -33,6 +33,8 @@ use function str_replace;
 
 /**
  * FluentHandler
+ *
+ * @phpstan-import-type Level from \Monolog\Logger
  */
 class FluentHandler extends AbstractProcessingHandler
 {
@@ -47,6 +49,8 @@ class FluentHandler extends AbstractProcessingHandler
      * @param null|string     $tagFormat
      * @param int             $level
      * @param bool            $bubble
+     *
+     * @phpstan-param Level $level
      */
     public function __construct(
         LoggerInterface $logger,
