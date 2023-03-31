@@ -8,18 +8,17 @@ use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use LogicException;
+use Monolog\Level;
 use Monolog\Logger;
+use Monolog\LogRecord;
 use Ytake\LaravelFluent\FluentHandler;
 
 use function unserialize;
 
 final class FluentHandlerTest extends TestCase
 {
-    /** @var FluentHandler */
-    private $handler;
-
-    /** @var Filesystem */
-    private $filesystem;
+    private FluentHandler $handler;
+    private Filesystem $filesystem;
 
     protected function setUp(): void
     {
@@ -40,19 +39,20 @@ final class FluentHandlerTest extends TestCase
      */
     public function testLogHandler(): void
     {
-        $this->handler->handle([
-            'message' => 'testing',
-            'level' => Logger::DEBUG,
-            'extra' => [],
-            'channel' => 'testing',
-            'level_name' => 'testing',
-            'context' => ['testing'],
-        ]);
+        $log = new LogRecord(
+            datetime:  new \DateTimeImmutable(),
+            channel: 'testing',
+            level: Level::Debug,
+            message: 'our log message',
+            context: ['log context'],
+            extra: []
+        );
+        $this->handler->handle($log);
         $this->assertFileExists(__DIR__ . '/tmp/put.log');
         $array = unserialize(
             $this->filesystem->get(__DIR__ . '/tmp/put.log')
         );
-        $this->assertSame('testing.testing', $array[0]);
+        $this->assertSame('testing.DEBUG', $array[0]);
     }
 
     public function testShouldThrowExceptionForMissingTag(): void
@@ -62,14 +62,16 @@ final class FluentHandlerTest extends TestCase
             new StubLogger($this->filesystem),
             '{{channel}}.{{level_name}}.{{testing}}'
         );
-        $handler->handle([
-            'message' => 'testing',
-            'level' => Logger::DEBUG,
-            'extra' => [],
-            'channel' => 'testing',
-            'level_name' => 'testing',
-            'context' => ['testing'],
-        ]);
+
+        $log = new LogRecord(
+            datetime:  new \DateTimeImmutable(),
+            channel: 'testing',
+            level: Level::Debug,
+            message: 'our log message',
+            context: ['log context'],
+            extra: []
+        );
+        $handler->handle($log);
     }
 
     public function testShouldBeOutputInSpecifiedFormat(): void
@@ -78,21 +80,24 @@ final class FluentHandlerTest extends TestCase
             new StubLogger($this->filesystem),
             '{{channel}}.{{level_name}}.{{testing}}.{{foo}}'
         );
-        $handler->handle([
-            'message' => 'testing',
-            'level' => Logger::DEBUG,
-            'extra' => [],
-            'channel' => 'testing',
-            'level_name' => 'testing',
-            'testing' => 'logger',
-            'foo' => 'bar',
-            'context' => ['testing'],
-        ]);
+
+        $log = new LogRecord(
+            datetime:  new \DateTimeImmutable(),
+            channel: 'testing',
+            level: Level::Debug,
+            message: 'our log message',
+            context: ['log context'],
+            extra: [
+                'testing' => 'logger',
+                'foo' => 'bar',
+            ]
+        );
+        $handler->handle($log);
         $this->assertFileExists(__DIR__ . '/tmp/put.log');
         $array = unserialize(
             $this->filesystem->get(__DIR__ . '/tmp/put.log')
         );
-        $this->assertSame('testing.testing.logger.bar', $array[0]);
+        $this->assertSame('testing.DEBUG.logger.bar', $array[0]);
     }
 
     /**
@@ -100,17 +105,18 @@ final class FluentHandlerTest extends TestCase
      */
     public function testShouldReturnContextExceptionAsString(): void
     {
-        $this->handler->handle([
-            'message' => 'testing',
-            'level' => Logger::DEBUG,
-            'extra' => [],
-            'channel' => 'testing',
-            'level_name' => 'testing',
-            'context' => [
+        $log = new LogRecord(
+            datetime:  new \DateTimeImmutable(),
+            channel: 'testing',
+            level: Level::Debug,
+            message: 'our log message',
+            context: [
                 'testing' => 'tests',
                 'exception' => new Exception('something wrong'),
             ],
-        ]);
+            extra: []
+        );
+        $this->handler->handle($log);
         $this->assertFileExists(__DIR__ . '/tmp/put.log');
         $array = unserialize(
             $this->filesystem->get(__DIR__ . '/tmp/put.log')

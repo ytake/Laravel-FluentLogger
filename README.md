@@ -12,6 +12,15 @@ fluent logger for laravel
 [![Latest Version](http://img.shields.io/packagist/v/ytake/laravel-fluent-logger.svg?style=flat-square)](https://packagist.org/packages/ytake/laravel-fluent-logger)
 [![Total Downloads](http://img.shields.io/packagist/dt/ytake/laravel-fluent-logger.svg?style=flat-square)](https://packagist.org/packages/ytake/laravel-fluent-logger)
 
+## Versions
+
+| Framework             | Library                        |
+|-----------------------|---------------------------------|
+| Laravel / Lumen < v10 | ytake/laravel-fluent-logger: ^5 |
+| Laravel / Lumen v10   | ytake/laravel-fluent-logger: ^6 |
+
+
+
 ## usage
 
 ### Installation For Laravel
@@ -25,7 +34,7 @@ or composer.json
 
 ```json
 "require": {
-  "ytake/laravel-fluent-logger": "^5.0"
+  "ytake/laravel-fluent-logger": "^6.0"
 },
 ```
 
@@ -206,8 +215,8 @@ You can add processors to the monolog handlers by adding them to the `processors
 
 config/fluent.php:
 ```php
-'processors' => [function($record) {
-    $record['extra']['level'] = $record['level_name'];
+'processors' => [function (\Monolog\LogRecord $record) {
+    $record->extra['level'] = $record['level_name'];
     
     return $record;
 }],
@@ -224,9 +233,9 @@ CustomProcessor.php:
 ```php
 class CustomProcessor
 {
-    public function __invoke($record)
+    public function __invoke(\Monolog\LogRecord $record)
     {
-        $record['extra']['level'] = $record['level_name'];
+        $record->extra['level'] = $record['level_name'];
 
         return $record;
     }

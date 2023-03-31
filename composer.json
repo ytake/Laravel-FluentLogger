@@ -17,21 +17,21 @@
     }
   ],
   "require": {
-    "php": "^7.3|^8.0.2",
+    "php": "^8.1",
     "fluent/logger": "^1.0",
-    "illuminate/log": "^8.0||^9.0",
-    "illuminate/support": "^8.0||^9.0",
-    "illuminate/config": "^8.0||^9.0",
-    "illuminate/contracts": "^8.0||^9.0",
-    "illuminate/container": "^8.0||^9.0",
-    "illuminate/events": "^8.0||^9.0",
-    "monolog/monolog": "^2.0"
+    "illuminate/log": "^10.0",
+    "illuminate/support": "^10.0",
+    "illuminate/config": "^10.0",
+    "illuminate/contracts": "^10.0",
+    "illuminate/container": "^10.0",
+    "illuminate/events": "^10.0",
+    "monolog/monolog": "^3.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.0",
     "php-coveralls/php-coveralls": "^2.4",
-    "illuminate/filesystem": "^8.0||^9.0",
-    "phpstan/phpstan": "^0.12",
+    "illuminate/filesystem": "^10.0",
+    "phpstan/phpstan": "^1.10",
     "slevomat/coding-standard": "^6.4",
     "squizlabs/php_codesniffer": "^3.5",
     "doctrine/coding-standard": "^8.2"
@@ -66,5 +66,10 @@
     "qa": [
       "@test" ,"@cs", "@sa"
     ]
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   }
 }
