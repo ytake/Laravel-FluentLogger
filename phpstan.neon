@@ -2,5 +2,5 @@ parameters:
   paths:
     - src
   level: max
-  excludes_analyse:
+  excludePaths:
     - src/LogServiceProvider.php

@@ -34,8 +34,6 @@ use function str_replace;
 
 /**
  * FluentHandler
- *
- * @phpstan-import-type Level from \Monolog\Logger
  */
 class FluentHandler extends AbstractProcessingHandler
 {
@@ -101,9 +99,9 @@ class FluentHandler extends AbstractProcessingHandler
     /**
      * returns the context
      *
-     * @param array $context
+     * @param array<string, mixed> $context
      *
-     * @return array|string
+     * @return array<string, mixed>|string
      */
     protected function getContext(array $context): array|string
     {
@@ -117,7 +115,7 @@ class FluentHandler extends AbstractProcessingHandler
     /**
      * Identifies the content type of the given $context
      *
-     * @param  array $context
+     * @param  array<string, mixed> $context
      *
      * @return bool
      */
@@ -132,7 +130,7 @@ class FluentHandler extends AbstractProcessingHandler
     /**
      * Returns the entire exception trace as a string
      *
-     * @param  array<string, mixed> $context
+     * @param  array{'exception': Exception} $context
 
      * @return string
      */
