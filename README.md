@@ -209,6 +209,27 @@ example (production)
 </match>
 ```
 
+## Tag format
+
+The tag format can be configured to take variables from the [LogEntry](https://github.com/Seldaek/monolog/blob/main/src/Monolog/LogRecord.php) 
+object.  This will then be used to match tags in fluent.
+
+`{{channel}}` will be [Laravel's current environment](https://laravel.com/docs/10.x/logging#configuring-the-channel-name) as configured in 
+`APP_ENV`, NOT the logging channel from `config/logging.php`
+
+`{{level_name}}` will be the [uppercase string version of the log level](https://github.com/Seldaek/monolog/blob/main/src/Monolog/Level.php#L136).
+
+`{{level}}` is the [numeric value](https://github.com/Seldaek/monolog/blob/main/src/Monolog/Level.php) of the log level.  Debug == 100, etc
+
+You can also use variables that exist in `LogEntry::$extra`.  Given a message like
+
+```php
+$l = new \Monolog\LogRecord(extra: ['foo' => 'bar']);
+```
+
+You could use a tag format of `myapp.{{foo}}` to produce a tag of `myapp.bar`.
+
+
 ## Monolog processors
 
 You can add processors to the monolog handlers by adding them to the `processors` array within the `fluent.php` config.
@@ -216,7 +237,7 @@ You can add processors to the monolog handlers by adding them to the `processors
 config/fluent.php:
 ```php
 'processors' => [function (\Monolog\LogRecord $record) {
-    $record->extra['level'] = $record['level_name'];
+    $record->extra['cloudwatch_log_group'] = 'test_group';
     
     return $record;
 }],
@@ -235,7 +256,7 @@ class CustomProcessor
 {
     public function __invoke(\Monolog\LogRecord $record)
     {
-        $record->extra['level'] = $record['level_name'];
+        $record->extra['cloudwatch_log_group'] = 'test_group';
 
         return $record;
     }
