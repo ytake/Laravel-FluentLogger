@@ -59,6 +59,10 @@ class FluentHandler extends AbstractProcessingHandler
         parent::__construct($level, $bubble);
     }
 
+    /**
+     * @param LogRecord $record
+     * @return void
+     */
     protected function write(LogRecord $record): void
     {
         $tag = $this->populateTag($record);
@@ -66,6 +70,7 @@ class FluentHandler extends AbstractProcessingHandler
             $tag,
             [
                 'message' => $record->message,
+                // @phpstan-ignore-next-line
                 'context' => $this->getContext($record->context),
                 'extra'   => $record->extra,
             ]
@@ -99,7 +104,7 @@ class FluentHandler extends AbstractProcessingHandler
     /**
      * returns the context
      *
-     * @param array<string, mixed> $context
+     * @param array{exception: Exception} $context
      *
      * @return array<string, mixed>|string
      */

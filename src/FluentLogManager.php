@@ -53,36 +53,54 @@ final class FluentLogManager extends LogManager
     }
 
     /**
+     * @return array{
+     *     host: string|null,
+     *     port:int|null,
+     *     options: array<string, mixed>|null,
+     *     packer: string|null,
+     *     handler: string|null,
+     *     processors?: array<callable(\Monolog\LogRecord): \Monolog\LogRecord>|null,
+     *     tagFormat: string|null
+     * }
+     * @throws BindingResolutionException
+     */
+    private function detectConfig(): array
+    {
+        $repository = $this->app->make('config');
+        assert(is_array($repository));
+        return $repository['fluent'];
+    }
+
+    /**
      * @param array<string, mixed> $config
      * @return HandlerInterface
      * @throws BindingResolutionException
      */
     private function createFluentHandler(array $config): HandlerInterface
     {
-        $configure = $this->app->make('config')['fluent'];
+        $configure = $this->detectConfig();
         $fluentHandler = $this->detectHandler($configure);
-
         $handler = new $fluentHandler(
             new FluentLogger(
                 $configure['host'] ?? FluentLogger::DEFAULT_ADDRESS,
-                (int)$configure['port'] ?? FluentLogger::DEFAULT_LISTEN_PORT,
+                $configure['port'] ?? FluentLogger::DEFAULT_LISTEN_PORT,
                 $configure['options'] ?? [],
                 $this->detectPacker($configure)
             ),
             $configure['tagFormat'] ?? null,
             $this->level($config)
         );
-
+        assert(is_a($handler, FluentHandler::class, true));
         if (isset($configure['processors']) && is_array($configure['processors'])) {
             foreach ($configure['processors'] as $processor) {
                 if (is_string($processor) && class_exists($processor)) {
+                    // @var callable(\Monolog\LogRecord): \Monolog\LogRecord $processor
                     $processor = $this->app->make($processor);
                 }
-
+                // @phpstan-ignore-next-line
                 $handler->pushProcessor($processor);
             }
         }
-
         return $handler;
     }
 
@@ -102,32 +120,49 @@ final class FluentLogManager extends LogManager
      */
     protected function defaultHandler(): string
     {
-        return FluentHandler::class;
+        return FluentHandler::class; // is of type class-string<FluentHandler>
     }
 
     /**
-     * @param array<string, mixed> $configure
+     * @param array{
+     *     host: string|null,
+     *     port:int|null,
+     *     options: array<string, mixed>|null,
+     *     packer: string|null,
+     *     handler: string|null,
+     *     processors?: array<callable(\Monolog\LogRecord): \Monolog\LogRecord>|null,
+     *     tagFormat: string|null
+     * } $configure
      *
      * @return PackerInterface|null
      * @throws BindingResolutionException
      */
-    protected function detectPacker(array $configure): ?PackerInterface
+    protected function detectPacker(array $configure): PackerInterface|null
     {
         if (!is_null($configure['packer']) && class_exists($configure['packer'])) {
+            // @phpstan-ignore-next-line
             return $this->app->make($configure['packer']);
         }
         return null;
     }
 
     /**
-     * @param array<string, mixed> $configure
+     * @param array{
+     *     host: string|null,
+     *     port:int|null,
+     *     options: array<string, mixed>|null,
+     *     packer: string|null,
+     *     handler: string|null,
+     *     processors?: array<callable(\Monolog\LogRecord): \Monolog\LogRecord>|null,
+     *     tagFormat: string|null
+     * } $configure
      *
      * @return string
      */
     protected function detectHandler(array $configure): string
     {
         $handler = $configure['handler'] ?? null;
-        if (!is_null($handler) && class_exists($handler)) {
+        if (!is_null($handler) && class_exists((string) $handler)) {
             return strval($handler);
         }
         return $this->defaultHandler();
