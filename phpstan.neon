@@ -4,3 +4,4 @@ parameters:
   level: max
   excludePaths:
     - src/LogServiceProvider.php
+  treatPhpDocTypesAsCertain: false
