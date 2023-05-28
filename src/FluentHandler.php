@@ -23,88 +23,73 @@ use Exception;
 use Fluent\Logger\LoggerInterface;
 use LogicException;
 use Monolog\Handler\AbstractProcessingHandler;
-use Monolog\Logger;
+use Monolog\Level;
+use Monolog\LogRecord;
+use Psr\Log\LogLevel;
 
 use function array_key_exists;
-use function is_array;
 use function preg_match_all;
 use function sprintf;
 use function str_replace;
 
 /**
  * FluentHandler
- *
- * @phpstan-import-type Level from \Monolog\Logger
  */
 class FluentHandler extends AbstractProcessingHandler
 {
-    /** @var LoggerInterface */
-    protected $logger;
-
-    /** @var string */
-    protected $tagFormat = '{{channel}}.{{level_name}}';
+    protected string $tagFormat = '{{channel}}.{{level_name}}';
 
     /**
-     * @param LoggerInterface $logger
-     * @param null|string     $tagFormat
-     * @param int             $level
-     * @param bool            $bubble
+     * @param LoggerInterface              $logger
+     * @param null|string                  $tagFormat
+     * @param int|string|Level|LogLevel::* $level
+     * @param bool                         $bubble
      *
-     * @phpstan-param Level $level
+     * @phpstan-param value-of<Level::VALUES>|value-of<Level::NAMES>|Level|LogLevel::* $level
      */
     public function __construct(
-        LoggerInterface $logger,
+        protected LoggerInterface $logger,
         string $tagFormat = null,
-        int $level = Logger::DEBUG,
+        Level|int|string $level = Level::Debug,
         bool $bubble = true
     ) {
-        $this->logger = $logger;
         if ($tagFormat !== null) {
             $this->tagFormat = $tagFormat;
         }
         parent::__construct($level, $bubble);
     }
 
-    /**
-     * @param array<string, mixed> $record
-     */
-    protected function write(array $record): void
+    protected function write(LogRecord $record): void
     {
         $tag = $this->populateTag($record);
         $this->logger->post(
             $tag,
             [
-                'message' => $record['message'],
-                'context' => $this->getContext($record['context']),
-                'extra'   => $record['extra'],
+                'message' => $record->message,
+                'context' => $this->getContext($record->context),
+                'extra'   => $record->extra,
             ]
         );
     }
 
-    /**
-     * @param array<string, mixed> $record
-     *
-     * @return string
-     */
-    protected function populateTag(array $record): string
+    protected function populateTag(LogRecord $record): string
     {
         return $this->processFormat($record, $this->tagFormat);
     }
 
-    /**
-     * @param array<string, mixed>  $record
-     * @param string $tag
-     *
-     * @return string
-     */
-    protected function processFormat(array $record, string $tag): string
+    protected function processFormat(LogRecord $record, string $tag): string
     {
         if (preg_match_all('/{{(.*?)}}/', $tag, $matches)) {
             foreach ($matches[1] as $match) {
-                if (!isset($record[$match])) {
+                if (isset($record[$match])) {
+                    $arr = $record;
+                } elseif (isset($record->extra[$match])) {
+                    $arr = $record->extra;
+                } else {
                     throw new LogicException('No such field in the record');
                 }
-                $tag = str_replace(sprintf('{{%s}}', $match), $record[$match], $tag);
+
+                $tag = str_replace(sprintf('{{%s}}', $match), $arr[$match], $tag);
             }
         }
 
@@ -114,11 +99,11 @@ class FluentHandler extends AbstractProcessingHandler
     /**
      * returns the context
      *
-     * @param mixed $context
+     * @param array<string, mixed> $context
      *
-     * @return mixed
+     * @return array<string, mixed>|string
      */
-    protected function getContext($context)
+    protected function getContext(array $context): array|string
     {
         if ($this->contextHasException($context)) {
             return $this->getContextExceptionTrace($context);
@@ -130,15 +115,14 @@ class FluentHandler extends AbstractProcessingHandler
     /**
      * Identifies the content type of the given $context
      *
-     * @param  mixed $context
+     * @param  array<string, mixed> $context
      *
      * @return bool
      */
-    protected function contextHasException($context): bool
+    protected function contextHasException(array $context): bool
     {
         return (
-            is_array($context)
-            && array_key_exists('exception', $context)
+            array_key_exists('exception', $context)
             && $context['exception'] instanceof Exception
         );
     }
@@ -146,7 +130,7 @@ class FluentHandler extends AbstractProcessingHandler
     /**
      * Returns the entire exception trace as a string
      *
-     * @param  array<string, mixed> $context
+     * @param  array{'exception': Exception} $context
 
      * @return string
      */

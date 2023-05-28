@@ -14,8 +14,7 @@ use function assert;
 
 final class LogManagerTest extends TestCase
 {
-    /** @var FluentLogManager */
-    private $logManager;
+    private FluentLogManager $logManager;
 
     protected function setUp(): void
     {

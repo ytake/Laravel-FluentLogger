@@ -34,12 +34,10 @@ use function strval;
 
 /**
  * FluentLogManager
+ * @property Container $app
  */
 final class FluentLogManager extends LogManager
 {
-    /** @var Container */
-    protected $app;
-
     /**
      * @param array<string, mixed> $config
      * @return LoggerInterface
@@ -115,10 +113,8 @@ final class FluentLogManager extends LogManager
      */
     protected function detectPacker(array $configure): ?PackerInterface
     {
-        if (!is_null($configure['packer'])) {
-            if (class_exists($configure['packer'])) {
-                return $this->app->make($configure['packer']);
-            }
+        if (!is_null($configure['packer']) && class_exists($configure['packer'])) {
+            return $this->app->make($configure['packer']);
         }
         return null;
     }
@@ -131,10 +127,8 @@ final class FluentLogManager extends LogManager
     protected function detectHandler(array $configure): string
     {
         $handler = $configure['handler'] ?? null;
-        if (!is_null($handler)) {
-            if (class_exists($handler)) {
-                return strval($handler);
-            }
+        if (!is_null($handler) && class_exists($handler)) {
+            return strval($handler);
         }
         return $this->defaultHandler();
     }

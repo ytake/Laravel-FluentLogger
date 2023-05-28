@@ -12,6 +12,15 @@ fluent logger for laravel
 [![Latest Version](http://img.shields.io/packagist/v/ytake/laravel-fluent-logger.svg?style=flat-square)](https://packagist.org/packages/ytake/laravel-fluent-logger)
 [![Total Downloads](http://img.shields.io/packagist/dt/ytake/laravel-fluent-logger.svg?style=flat-square)](https://packagist.org/packages/ytake/laravel-fluent-logger)
 
+## Versions
+
+| Framework             | Library                        |
+|-----------------------|---------------------------------|
+| Laravel / Lumen < v10 | ytake/laravel-fluent-logger: ^5 |
+| Laravel / Lumen v10   | ytake/laravel-fluent-logger: ^6 |
+
+
+
 ## usage
 
 ### Installation For Laravel
@@ -25,7 +34,7 @@ or composer.json
 
 ```json
 "require": {
-  "ytake/laravel-fluent-logger": "^5.0"
+  "ytake/laravel-fluent-logger": "^6.0"
 },
 ```
 
@@ -200,14 +209,35 @@ example (production)
 </match>
 ```
 
+## Tag format
+
+The tag format can be configured to take variables from the [LogEntry](https://github.com/Seldaek/monolog/blob/main/src/Monolog/LogRecord.php) 
+object.  This will then be used to match tags in fluent.
+
+`{{channel}}` will be [Laravel's current environment](https://laravel.com/docs/10.x/logging#configuring-the-channel-name) as configured in 
+`APP_ENV`, NOT the logging channel from `config/logging.php`
+
+`{{level_name}}` will be the [uppercase string version of the log level](https://github.com/Seldaek/monolog/blob/main/src/Monolog/Level.php#L136).
+
+`{{level}}` is the [numeric value](https://github.com/Seldaek/monolog/blob/main/src/Monolog/Level.php) of the log level.  Debug == 100, etc
+
+You can also use variables that exist in `LogEntry::$extra`.  Given a message like
+
+```php
+$l = new \Monolog\LogRecord(extra: ['foo' => 'bar']);
+```
+
+You could use a tag format of `myapp.{{foo}}` to produce a tag of `myapp.bar`.
+
+
 ## Monolog processors
 
 You can add processors to the monolog handlers by adding them to the `processors` array within the `fluent.php` config.
 
 config/fluent.php:
 ```php
-'processors' => [function($record) {
-    $record['extra']['level'] = $record['level_name'];
+'processors' => [function (\Monolog\LogRecord $record) {
+    $record->extra['cloudwatch_log_group'] = 'test_group';
     
     return $record;
 }],
@@ -224,9 +254,9 @@ CustomProcessor.php:
 ```php
 class CustomProcessor
 {
-    public function __invoke($record)
+    public function __invoke(\Monolog\LogRecord $record)
     {
-        $record['extra']['level'] = $record['level_name'];
+        $record->extra['cloudwatch_log_group'] = 'test_group';
 
         return $record;
     }

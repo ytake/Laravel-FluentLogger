@@ -12,17 +12,10 @@ use function serialize;
 
 final class StubLogger implements LoggerInterface
 {
-    /** @var Filesystem */
-    protected $filesystem;
-
-    public function __construct(Filesystem $filesystem)
+    public function __construct(protected Filesystem $filesystem)
     {
-        $this->filesystem = $filesystem;
     }
 
-    /**
-     * @param array $data
-     */
     public function post($tag, array $data): void
     {
         $this->filesystem->put(__DIR__ . '/tmp/put.log', serialize([$tag, $data]));
