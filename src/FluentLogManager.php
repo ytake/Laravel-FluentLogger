@@ -21,6 +21,7 @@ namespace Ytake\LaravelFluent;
 
 use Fluent\Logger\FluentLogger;
 use Fluent\Logger\PackerInterface;
+use Illuminate\Config\Repository;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Log\LogManager;
@@ -66,9 +67,24 @@ final class FluentLogManager extends LogManager
      */
     private function detectConfig(): array
     {
+        /** @var Repository $repository */
         $repository = $this->app->make('config');
-        assert(is_array($repository));
-        return $repository['fluent'];
+
+        assert($repository->has('fluent'));
+        /** @var array{
+         *     host: string|null,
+         *     port:int|null,
+         *     options: array<string, mixed>|null,
+         *     packer: string|null,
+         *     handler: string|null,
+         *     processors?: array<callable(\Monolog\LogRecord): \Monolog\LogRecord>|null,
+         *     tagFormat: string|null
+         * } $config
+         */
+        $config = $repository->get('fluent');
+        assert(is_array($config));
+
+        return $config;
     }
 
     /**
