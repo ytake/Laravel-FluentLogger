@@ -14,10 +14,10 @@ fluent logger for laravel
 
 ## Versions
 
-| Framework             | Library                        |
-|-----------------------|---------------------------------|
-| Laravel / Lumen < v10 | ytake/laravel-fluent-logger: ^5 |
-| Laravel / Lumen v10   | ytake/laravel-fluent-logger: ^6 |
+| Framework              | Library                        |
+|------------------------|---------------------------------|
+| Laravel / Lumen < v10  | ytake/laravel-fluent-logger: ^5 |
+| Laravel / Lumen >= v10 | ytake/laravel-fluent-logger: ^6 |
 
 
 
@@ -232,7 +232,8 @@ You could use a tag format of `myapp.{{foo}}` to produce a tag of `myapp.bar`.
 
 ## Monolog processors
 
-You can add processors to the monolog handlers by adding them to the `processors` array within the `fluent.php` config.
+You can add [processors](https://seldaek.github.io/monolog/doc/01-usage.html#using-processors) to the Monolog handlers by adding them to 
+the `processors` array within the `fluent.php` config.
 
 config/fluent.php:
 ```php
