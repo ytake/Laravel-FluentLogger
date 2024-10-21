@@ -1,0 +1,7 @@
+parameters:
+  paths:
+    - src
+  level: max
+  excludePaths:
+    - src/LogServiceProvider.php
+  treatPhpDocTypesAsCertain: false

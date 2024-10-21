@@ -12,9 +12,11 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
  *
- * Copyright (c) 2015-2018 Yuuki Takezawa
- *
+ * Copyright (c) 2015-2021 Yuuki Takezawa
  */
+
+declare(strict_types=1);
+
 return [
 
     'host' => env('FLUENTD_HOST', '127.0.0.1'),
@@ -30,6 +32,8 @@ return [
 
     // optionally override Ytake\LaravelFluent\FluentHandler class to customize behaviour
     'handler' => null,
+
+    'processors' => [],
 
     'tagFormat' => '{{channel}}.{{level_name}}',
 ];

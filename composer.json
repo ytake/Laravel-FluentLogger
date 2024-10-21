@@ -17,20 +17,24 @@
     }
   ],
   "require": {
-    "php": "^7.1|^8.0",
+    "php": "^8.1",
     "fluent/logger": "^1.0",
-    "illuminate/log": "^8.0",
-    "illuminate/support": "^8.0",
-    "illuminate/config": "^8.0",
-    "illuminate/contracts": "^8.0",
-    "illuminate/container": "^8.0",
-    "illuminate/events": "^8.0",
-    "monolog/monolog": "^2.0"
+    "illuminate/log": "^10.0 | ^11.0",
+    "illuminate/support": "^10.0 | ^11.0",
+    "illuminate/config": "^10.0 | ^11.0",
+    "illuminate/contracts": "^10.0 | ^11.0",
+    "illuminate/container": "^10.0 | ^11.0",
+    "illuminate/events": "^10.0 | ^11.0",
+    "monolog/monolog": "^3.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^9.5",
-    "satooshi/php-coveralls": "*",
-    "illuminate/filesystem": "^8.0"
+    "phpunit/phpunit": "^10.0",
+    "php-coveralls/php-coveralls": "^2.4",
+    "illuminate/filesystem": "^10.0 | ^11.0",
+    "phpstan/phpstan": "^1.10",
+    "slevomat/coding-standard": "^6.4",
+    "squizlabs/php_codesniffer": "^3.5",
+    "doctrine/coding-standard": "^8.2"
   },
   "autoload": {
     "psr-4": {
@@ -38,15 +42,34 @@
     }
   },
   "autoload-dev": {
-    "classmap": [
-      "tests/TestCase.php"
-    ]
+    "psr-4": {
+      "Tests\\": "tests"
+    }
   },
   "extra": {
     "laravel": {
       "providers": [
         "Ytake\\LaravelFluent\\LogServiceProvider"
       ]
+    }
+  },
+  "scripts": {
+    "test": [
+      "./vendor/bin/phpunit"
+    ],
+    "cs": [
+      "./vendor/bin/phpcs --standard=./phpcs.xml src tests"
+    ],
+    "sa": [
+      "./vendor/bin/phpstan analyse -c phpstan.neon"
+    ],
+    "qa": [
+      "@test" ,"@cs", "@sa"
+    ]
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
     }
   }
 }

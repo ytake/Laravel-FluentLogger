@@ -19,10 +19,15 @@ checks:
         code_rating: true
         duplication: true
 build:
+    environment:
+        php:
+            version: 8.1.2
+            ini:
+                "xdebug.mode": coverage
     tests:
         override:
             -
-                command: 'phpunit'
+                command: 'vendor/bin/phpunit --coverage-clover tests/logs/clover.xml'
                 coverage:
                     file: 'tests/logs/clover.xml'
                     format: 'php-clover'

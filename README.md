@@ -4,16 +4,22 @@ fluent logger for laravel
 
 [fluentd](http://www.fluentd.org/)
 
-[![Build Status](http://img.shields.io/travis/ytake/Laravel-FluentLogger/master.svg?style=flat-square)](https://travis-ci.org/ytake/Laravel-FluentLogger)
+[![Tests](https://github.com/ytake/Laravel-FluentLogger/actions/workflows/php.yml/badge.svg?branch=main)](https://github.com/ytake/Laravel-FluentLogger/actions/workflows/php.yml)
 [![Coverage Status](http://img.shields.io/coveralls/ytake/Laravel-FluentLogger/master.svg?style=flat-square)](https://coveralls.io/r/ytake/Laravel-FluentLogger?branch=master)
 [![Scrutinizer Code Quality](http://img.shields.io/scrutinizer/g/ytake/Laravel-FluentLogger.svg?style=flat)](https://scrutinizer-ci.com/g/ytake/Laravel-FluentLogger/?branch=master)
 
 [![License](http://img.shields.io/packagist/l/ytake/laravel-fluent-logger.svg?style=flat-square)](https://packagist.org/packages/ytake/laravel-fluent-logger)
 [![Latest Version](http://img.shields.io/packagist/v/ytake/laravel-fluent-logger.svg?style=flat-square)](https://packagist.org/packages/ytake/laravel-fluent-logger)
 [![Total Downloads](http://img.shields.io/packagist/dt/ytake/laravel-fluent-logger.svg?style=flat-square)](https://packagist.org/packages/ytake/laravel-fluent-logger)
-[![StyleCI](https://styleci.io/repos/45625024/shield)](https://styleci.io/repos/45625024)
 
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/2ac5d569-39c0-4a80-900d-03760287acba/mini.png)](https://insight.sensiolabs.com/projects/2ac5d569-39c0-4a80-900d-03760287acba)
+## Versions
+
+| Framework              | Library                        |
+|------------------------|---------------------------------|
+| Laravel / Lumen < v10  | ytake/laravel-fluent-logger: ^5 |
+| Laravel / Lumen >= v10 | ytake/laravel-fluent-logger: ^6 |
+
+
 
 ## usage
 
@@ -28,7 +34,7 @@ or composer.json
 
 ```json
 "require": {
-  "ytake/laravel-fluent-logger": "^3.0"
+  "ytake/laravel-fluent-logger": "^6.0"
 },
 ```
 
@@ -96,6 +102,11 @@ return [
     /** @see https://github.com/fluent/fluent-logger-php/blob/master/src/PackerInterface.php */
     // specified class name
     'packer' => null,
+    
+    // optionally override Ytake\LaravelFluent\FluentHandler class to customize behaviour
+    'handler' => null,
+    
+    'processors' => [],
 
     'tagFormat' => '{{channel}}.{{level_name}}',
 ];
@@ -196,6 +207,61 @@ example (production)
 <match lumen.**>
   type stdout
 </match>
+```
+
+## Tag format
+
+The tag format can be configured to take variables from the [LogEntry](https://github.com/Seldaek/monolog/blob/main/src/Monolog/LogRecord.php) 
+object.  This will then be used to match tags in fluent.
+
+`{{channel}}` will be [Laravel's current environment](https://laravel.com/docs/10.x/logging#configuring-the-channel-name) as configured in 
+`APP_ENV`, NOT the logging channel from `config/logging.php`
+
+`{{level_name}}` will be the [uppercase string version of the log level](https://github.com/Seldaek/monolog/blob/main/src/Monolog/Level.php#L136).
+
+`{{level}}` is the [numeric value](https://github.com/Seldaek/monolog/blob/main/src/Monolog/Level.php) of the log level.  Debug == 100, etc
+
+You can also use variables that exist in `LogEntry::$extra`.  Given a message like
+
+```php
+$l = new \Monolog\LogRecord(extra: ['foo' => 'bar']);
+```
+
+You could use a tag format of `myapp.{{foo}}` to produce a tag of `myapp.bar`.
+
+
+## Monolog processors
+
+You can add [processors](https://seldaek.github.io/monolog/doc/01-usage.html#using-processors) to the Monolog handlers by adding them to 
+the `processors` array within the `fluent.php` config.
+
+config/fluent.php:
+```php
+'processors' => [function (\Monolog\LogRecord $record) {
+    $record->extra['cloudwatch_log_group'] = 'test_group';
+    
+    return $record;
+}],
+```
+
+Alternatively, you can pass the class name of the processor.  This helps keep your config compatible with `config:cache`
+
+config/fluent.php:
+```php
+'processors' => [CustomProcessor::class],
+```
+
+CustomProcessor.php:
+```php
+class CustomProcessor
+{
+    public function __invoke(\Monolog\LogRecord $record)
+    {
+        $record->extra['cloudwatch_log_group'] = 'test_group';
+
+        return $record;
+    }
+}
 ```
 
 ## Author ##
