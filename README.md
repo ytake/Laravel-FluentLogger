@@ -14,11 +14,11 @@ fluent logger for laravel
 
 ## Versions
 
-| Framework              | Library                        |
+| Framework              | Library                         |
 |------------------------|---------------------------------|
 | Laravel / Lumen < v10  | ytake/laravel-fluent-logger: ^5 |
-| Laravel / Lumen >= v10 | ytake/laravel-fluent-logger: ^6 |
-
+| Laravel / Lumen    v10 | ytake/laravel-fluent-logger: ^6 |
+| Laravel / Lumen >= v11 | ytake/laravel-fluent-logger: ^7 |
 
 
 ## usage
@@ -34,7 +34,7 @@ or composer.json
 
 ```json
 "require": {
-  "ytake/laravel-fluent-logger": "^6.0"
+  "ytake/laravel-fluent-logger": "^7.0"
 },
 ```
 

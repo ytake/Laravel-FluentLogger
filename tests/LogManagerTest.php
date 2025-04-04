@@ -62,6 +62,9 @@ final class LogManagerTest extends TestCase
 
         /** @var \Ytake\LaravelFluent\FluentHandler::class $logger */
         $logger = $logDriver->getLogger()->getHandlers()[0];
+
+        $this->assertInstanceOf(FluentHandler::class, $logger, 'FluentHandler creation failed, emergency handler returned');
+
         $actualProcessor = $logger->popProcessor();
 
         $this->assertEquals($processor, $actualProcessor);
