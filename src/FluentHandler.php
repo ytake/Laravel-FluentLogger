@@ -49,7 +49,7 @@ class FluentHandler extends AbstractProcessingHandler
      */
     public function __construct(
         protected LoggerInterface $logger,
-        string $tagFormat = null,
+        ?string $tagFormat = null,
         Level|int|string $level = Level::Debug,
         bool $bubble = true
     ) {

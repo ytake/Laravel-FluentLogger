@@ -10,6 +10,7 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Events\EventServiceProvider;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Log\Context\ContextServiceProvider;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 
 use function assert;
@@ -43,6 +44,11 @@ class TestCase extends PHPUnitTestCase
 
         $eventProvider = new EventServiceProvider($container);
         $eventProvider->register();
+
+        // ContextServiceProvider was added in Laravel 11 and is a base service provider in Application.  In Laravel 12,
+        // they added ContextLogProcessor which is added to every Logger instance.  See LogManager::get()
+        $contextProvider = new ContextServiceProvider($container);
+        $contextProvider->register();
 
         return $container;
     }
